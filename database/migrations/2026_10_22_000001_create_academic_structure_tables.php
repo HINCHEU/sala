@@ -93,7 +93,8 @@ return new class extends Migration
             $table->decimal('pass_score', 5, 2);
             $table->unsignedSmallInteger('sort')->default(0);
             $table->timestamps();
-            $table->index(['school_id', 'academic_year_id', 'grade_level_id']);
+            // Named by hand: the generated name passes MySQL's 64-character limit.
+            $table->index(['school_id', 'academic_year_id', 'grade_level_id'], 'curriculum_subjects_scope_index');
         });
 
         Schema::create('grade_divisors', function (Blueprint $table) {
@@ -104,7 +105,7 @@ return new class extends Migration
             $table->foreignId('track_id')->nullable()->constrained()->restrictOnDelete();
             $table->decimal('divisor', 6, 2);
             $table->timestamps();
-            $table->index(['school_id', 'academic_year_id', 'grade_level_id']);
+            $table->index(['school_id', 'academic_year_id', 'grade_level_id'], 'grade_divisors_scope_index');
         });
 
         Schema::create('grading_scales', function (Blueprint $table) {
