@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Domain\School\Enums\Permission;
+use App\Models\User;
+use App\Support\Tenancy\CurrentSchool;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -35,12 +38,40 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $school = app(CurrentSchool::class)->get()?->loadMissing('logo');
+
         return [
             ...parent::share($request),
-            'auth' => [
-                'user' => $request->user()?->only('id', 'name', 'email'),
-            ],
             'locale' => app()->getLocale(),
+            'auth' => [
+                'user' => $user?->only('id', 'name', 'email', 'phone', 'is_platform_admin'),
+            ],
+            'school' => fn () => $school ? [
+                'id' => $school->id,
+                'name' => $school->name(),
+                'name_km' => $school->name_km,
+                'name_en' => $school->name_en,
+                'logo_url' => $school->logo?->url(),
+                'brand_color' => $school->brand_color,
+                'brand_color_soft' => $school->brand_color_soft,
+            ] : null,
+            'schools' => fn () => $user instanceof User
+                ? $user->accessibleSchools()->map(fn ($s) => ['id' => $s->id, 'name' => $s->name()])
+                : [],
+            'roles' => fn () => $user instanceof User ? array_map(fn ($r) => $r->value, $user->schoolRoles()) : [],
+            'can' => fn () => [
+                'platform' => (bool) $user?->is_platform_admin,
+                'manageSettings' => $school && $user?->can(Permission::ManageSettings->value),
+                'manageMembers' => $school && $user?->can(Permission::ManageMembers->value),
+            ],
+            'flash' => fn () => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+                'status' => $request->session()->get('status'),
+                'inviteLink' => $request->session()->get('invite_link'),
+                'tempPassword' => $request->session()->get('temp_password'),
+            ],
         ];
     }
 }

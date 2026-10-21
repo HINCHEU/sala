@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Base domain for school subdomains (demo.sala.test → school code "demo"). Empty = session switcher only.
+    'tenant_domain' => env('TENANT_DOMAIN'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

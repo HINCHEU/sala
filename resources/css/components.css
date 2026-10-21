@@ -1,0 +1,218 @@
+/* Sala component rules from docs/3-Sala-Design-System.md (Button, Dialog). Vue components use these classes. */
+
+/* Button */
+.s-btn {
+    font: inherit;
+    font-size: 15px;
+    line-height: 24px;
+    font-weight: 600;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    background: var(--surface-raised);
+    color: var(--ink);
+    cursor: pointer;
+    text-decoration: none;
+}
+.s-btn:hover:not(:disabled) {
+    background: var(--surface-sunken);
+}
+.s-btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
+}
+.s-btn-primary:hover:not(:disabled) {
+    background: var(--primary);
+    filter: brightness(0.92);
+}
+.s-btn-danger {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+.s-btn-ghost {
+    background: none;
+    border-color: transparent;
+    color: var(--primary);
+}
+.s-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+.s-btn:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+.s-spin {
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-full);
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: s-spin 0.8s linear infinite;
+}
+@keyframes s-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Form controls */
+.s-input {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+    font: inherit;
+    line-height: 28px;
+    color: var(--ink);
+    background: var(--surface-raised);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+}
+.s-input:focus {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+.s-input[aria-invalid='true'] {
+    border-color: var(--danger);
+    background: var(--danger-soft);
+}
+
+/* Dialog — SweetAlert2 restyled with Sala tokens. */
+.swal2-container.swal2-backdrop-show {
+    background: rgba(10, 13, 17, 0.48);
+}
+.swal2-popup.s-swal {
+    width: min(28rem, calc(100vw - 32px));
+    padding: 0 0 var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface-raised);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    box-shadow: var(--shadow-lg);
+}
+.swal2-popup.s-swal .s-swal-title {
+    margin: 0;
+    padding: var(--space-4) var(--space-6) 0;
+    font-size: 20px;
+    line-height: 32px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.swal2-popup.s-swal .s-swal-text {
+    margin: var(--space-2) 0 0;
+    padding: 0 var(--space-6);
+    font-size: 16px;
+    line-height: 28px;
+    color: var(--ink-muted);
+    text-align: center;
+}
+.swal2-popup.s-swal .s-swal-actions {
+    width: 100%;
+    box-sizing: border-box;
+    margin: var(--space-6) 0 0;
+    padding: 0 var(--space-6);
+    gap: var(--space-2);
+    justify-content: flex-end;
+}
+.swal2-popup.s-swal .s-swal-actions .s-btn {
+    margin: 0;
+}
+.swal2-popup.s-swal .s-btn:focus {
+    box-shadow: none;
+}
+.swal2-popup.s-swal .s-btn:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+.swal2-popup.s-swal .swal2-icon {
+    font-size: 11px;
+    margin: var(--space-6) auto 0;
+}
+.swal2-popup.s-swal .swal2-icon.swal2-warning {
+    border-color: var(--warning);
+    color: var(--warning);
+}
+.swal2-popup.s-swal .swal2-icon.swal2-question,
+.swal2-popup.s-swal .swal2-icon.swal2-info {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.swal2-popup.s-swal .swal2-icon.swal2-error {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.swal2-popup.s-swal .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: var(--danger);
+}
+.swal2-popup.s-swal .swal2-icon.swal2-success {
+    border-color: var(--success);
+    color: var(--success);
+}
+.swal2-popup.s-swal .swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: var(--success);
+}
+.swal2-popup.s-swal .swal2-icon.swal2-success .swal2-success-ring {
+    border-color: var(--success);
+    opacity: 0.3;
+}
+.swal2-popup.s-swal .swal2-icon.swal2-success [class^='swal2-success-circular-line'],
+.swal2-popup.s-swal .swal2-icon.swal2-success .swal2-success-fix {
+    background-color: var(--surface-raised);
+}
+
+/* Toast */
+.swal2-popup.swal2-toast.s-swal-toast {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-raised);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    box-shadow: var(--shadow-lg);
+}
+.swal2-popup.swal2-toast.s-swal-toast .swal2-title {
+    font-size: 15px;
+    line-height: 24px;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0 var(--space-2);
+}
+.swal2-popup.swal2-toast.s-swal-toast .swal2-timer-progress-bar {
+    background: var(--primary);
+}
+.swal2-popup.swal2-toast.s-swal-toast .swal2-icon.swal2-success {
+    border-color: var(--success);
+    color: var(--success);
+}
+.swal2-popup.swal2-toast.s-swal-toast .swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: var(--success);
+}
+.swal2-popup.swal2-toast.s-swal-toast .swal2-icon.swal2-success [class^='swal2-success-circular-line'],
+.swal2-popup.swal2-toast.s-swal-toast .swal2-icon.swal2-success .swal2-success-fix {
+    background-color: var(--surface-raised);
+}
+.swal2-popup.swal2-toast.s-swal-toast .swal2-icon.swal2-error {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.swal2-popup.swal2-toast.s-swal-toast .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: var(--danger);
+}
+
+/* Phones: full-width dialog buttons, primary on top */
+@media (max-width: 480px) {
+    .swal2-popup.s-swal .s-swal-actions {
+        flex-direction: column-reverse;
+    }
+    .swal2-popup.s-swal .s-swal-actions .s-btn {
+        width: 100%;
+    }
+}

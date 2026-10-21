@@ -14,11 +14,18 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            // Parents often have no email: a user has an email, a phone (+855 normalised), or both.
+            $table->string('email')->nullable()->unique();
+            $table->string('phone', 20)->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('locale', 5)->nullable();
+            $table->string('telegram_chat_id')->nullable();
+            // Platform super admin sits outside school teams, so it is a flag rather than a team role.
+            $table->boolean('is_platform_admin')->default(false);
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

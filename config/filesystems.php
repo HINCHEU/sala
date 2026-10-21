@@ -67,7 +67,7 @@ return [
         'media_public' => [
             'driver' => env('MEDIA_DRIVER', 'local'),
             'root' => storage_path('app/public/media'),
-            'url' => env('MEDIA_PUBLIC_URL', rtrim(env('APP_URL', 'http://localhost'), '/').'/storage/media'),
+            'url' => env('MEDIA_PUBLIC_URL', '/storage/media'),
             'key' => env('MEDIA_KEY'),
             'secret' => env('MEDIA_SECRET'),
             'region' => env('MEDIA_REGION', 'auto'),

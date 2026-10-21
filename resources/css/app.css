@@ -10,6 +10,8 @@
 @import '@fontsource/battambang/khmer-400.css';
 @import '@fontsource/siemreap/khmer-400.css';
 @import '@fontsource/moul/khmer-400.css';
+@import 'sweetalert2/dist/sweetalert2.min.css';
+@import './components.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

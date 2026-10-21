@@ -1,24 +1,23 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
+import { ClipboardList, School } from 'lucide-vue-next';
+import { useRoleLayout } from '@/lib/roleLayout';
+import EmptyState from '@/Components/EmptyState.vue';
+
+defineProps({ hasSchool: { type: Boolean, required: true } });
 
 const page = usePage();
+const layout = useRoleLayout();
 </script>
 
 <template>
-    <Head :title="$t('app.dashboard')" />
-    <main class="mx-auto max-w-5xl px-4 py-8 sm:px-8">
-        <div class="flex items-center justify-between gap-4">
-            <h1 class="text-[22px] leading-9 font-semibold">
-                {{ $t('app.welcome', { name: page.props.auth.user.name }) }}
-            </h1>
-            <Link
-                href="/logout"
-                method="post"
-                as="button"
-                class="min-h-11 rounded-md border border-border-strong px-4 py-2 hover:bg-surface-sunken"
-            >
-                {{ $t('app.sign_out') }}
-            </Link>
-        </div>
-    </main>
+    <component :is="layout" :title="$t('app.welcome', { name: page.props.auth.user.name })">
+        <EmptyState
+            v-if="hasSchool"
+            :icon="ClipboardList"
+            :title="$t('app.dashboard_empty_title')"
+            :text="$t('app.dashboard_empty_text')"
+        />
+        <EmptyState v-else :icon="School" :title="$t('app.no_school_title')" :text="$t('app.no_school_text')" />
+    </component>
 </template>

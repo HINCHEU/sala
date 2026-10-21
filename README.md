@@ -12,7 +12,7 @@ git clone https://github.com/HINCHEU/sala.git && cd sala
 cp .env.example .env
 docker compose up -d --build
 docker compose exec app composer setup
-open http://localhost:8080        # sign in as admin@sala.test / password
+open http://localhost:8080        # sign in as admin@sala.test / password (demo accounts below)
 ```
 
 `composer setup` installs PHP packages, generates the app key, migrates, seeds and links storage.
@@ -26,6 +26,18 @@ The `vite` container serves front-end assets with hot reload.
 | Horizon (queues) | http://localhost:8080/horizon |
 | Telescope (local only) | http://localhost:8080/telescope |
 | MySQL from the host | `127.0.0.1:33060` |
+
+## Demo accounts
+
+Every seeded password is `password`.
+
+| Account | Sign in with |
+| --- | --- |
+| Platform admin (all schools) | `admin@sala.test` |
+| A role in a demo school | `{role}@{school}.sala.test`, e.g. `director@demo1.sala.test`, `subject_teacher@demo2.sala.test` |
+| Guardian (phone login) | `012 000 101` (demo1) or `012 000 201` (demo2) |
+
+Directors, academic office and accountants must turn on two-step verification at first sign-in (any TOTP app).
 
 ## Everyday commands
 
