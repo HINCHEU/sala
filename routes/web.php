@@ -1,6 +1,15 @@
 <?php
 
 use App\Domain\School\Enums\Permission;
+use App\Http\Controllers\Academic\AcademicYearController;
+use App\Http\Controllers\Academic\ClassroomController;
+use App\Http\Controllers\Academic\CurriculumController;
+use App\Http\Controllers\Academic\GradeLevelController;
+use App\Http\Controllers\Academic\GradingScaleController;
+use App\Http\Controllers\Academic\RoomController;
+use App\Http\Controllers\Academic\StructureController;
+use App\Http\Controllers\Academic\SubjectController;
+use App\Http\Controllers\Academic\TrackController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -35,6 +44,34 @@ Route::middleware('auth')->group(function () {
             Route::middleware('can:'.Permission::ManageSettings->value)->group(function () {
                 Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
                 Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+            });
+
+            Route::middleware('can:'.Permission::ManageAcademic->value)->prefix('academic')->name('academic.')->group(function () {
+                Route::get('/years', [AcademicYearController::class, 'index'])->name('years.index');
+                Route::post('/years', [AcademicYearController::class, 'store'])->name('years.store');
+                Route::put('/years/{year}', [AcademicYearController::class, 'update'])->name('years.update');
+                Route::delete('/years/{year}', [AcademicYearController::class, 'destroy'])->name('years.destroy');
+                Route::post('/years/{year}/current', [AcademicYearController::class, 'setCurrent'])->name('years.current');
+                Route::post('/years/{year}/terms', [AcademicYearController::class, 'storeTerm'])->name('terms.store');
+                Route::put('/terms/{term}', [AcademicYearController::class, 'updateTerm'])->name('terms.update');
+                Route::delete('/terms/{term}', [AcademicYearController::class, 'destroyTerm'])->name('terms.destroy');
+
+                Route::get('/structure', [StructureController::class, 'index'])->name('structure');
+                Route::post('/structure/moeys-template', [StructureController::class, 'applyTemplate'])->name('template');
+                Route::resource('grades', GradeLevelController::class)->only(['store', 'update', 'destroy']);
+                Route::resource('tracks', TrackController::class)->only(['store', 'update', 'destroy']);
+                Route::resource('subjects', SubjectController::class)->only(['store', 'update', 'destroy']);
+                Route::resource('rooms', RoomController::class)->only(['store', 'update', 'destroy']);
+
+                Route::get('/classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
+                Route::resource('classrooms', ClassroomController::class)->only(['store', 'update', 'destroy']);
+
+                Route::get('/curriculum', [CurriculumController::class, 'edit'])->name('curriculum.edit');
+                Route::put('/curriculum', [CurriculumController::class, 'update'])->name('curriculum.update');
+                Route::post('/curriculum/copy', [CurriculumController::class, 'copy'])->name('curriculum.copy');
+
+                Route::get('/grading', [GradingScaleController::class, 'index'])->name('grading.index');
+                Route::put('/grading/{stage}', [GradingScaleController::class, 'update'])->name('grading.update');
             });
 
             Route::middleware('can:'.Permission::ManageMembers->value)->group(function () {

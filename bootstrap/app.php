@@ -8,6 +8,7 @@ use App\Support\Tenancy\ResolveSchool;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
             HandleInertiaRequests::class,
         ]);
+
+        // Tenant scopes must be on before route model binding, or {subject} could resolve another school's row.
+        $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: ResolveSchool::class);
 
         $middleware->alias([
             'two-factor.required' => EnsureTwoFactorEnabled::class,

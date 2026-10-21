@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Http\Controllers\Academic;
+
+use App\Domain\Academic\Enums\Shift;
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Academic\Models\Classroom;
+use App\Domain\Academic\Models\GradeLevel;
+use App\Domain\Academic\Models\Room;
+use App\Domain\Academic\Models\Track;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Academic\ClassroomRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class ClassroomController extends Controller
+{
+    public function index(Request $request): Response
+    {
+        $years = AcademicYear::orderByDesc('start_date')->get(['id', 'name', 'is_current']);
+        $yearId = $request->integer('year') ?: ($years->firstWhere('is_current', true) ?? $years->first())?->id;
+
+        return Inertia::render('Academic/Classrooms', [
+            'years' => $years,
+            'yearId' => $yearId,
+            'classrooms' => Classroom::with('gradeLevel:id,number')->where('academic_year_id', $yearId)->get()
+                ->sortBy(fn (Classroom $c) => sprintf('%02d-%s', $c->gradeLevel->number, $c->name))->values(),
+            'grades' => GradeLevel::orderBy('number')->get(['id', 'name_km', 'name_en', 'has_tracks']),
+            'tracks' => Track::orderBy('code')->get(['id', 'name_km', 'name_en']),
+            'rooms' => Room::orderBy('name')->get(['id', 'name']),
+            'shifts' => array_column(Shift::cases(), 'value'),
+        ]);
+    }
+
+    public function store(ClassroomRequest $request): RedirectResponse
+    {
+        Classroom::create($request->validated());
+
+        return back()->with('success', __('academic.saved'));
+    }
+
+    public function update(ClassroomRequest $request, Classroom $classroom): RedirectResponse
+    {
+        $classroom->update($request->validated());
+
+        return back()->with('success', __('academic.saved'));
+    }
+
+    public function destroy(Classroom $classroom): RedirectResponse
+    {
+        return $this->destroyUnlessUsed($classroom);
+    }
+}

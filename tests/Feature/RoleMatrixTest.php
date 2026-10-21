@@ -22,6 +22,22 @@ it('lets only the director manage settings and members', function (Role $role, i
     [Role::Student, 403],
 ]);
 
+it('lets the director and academic office manage the academic structure', function (Role $role, int $status) {
+    $user = member(makeSchool(), $role);
+
+    $this->actingAs($user)->get('/academic/years')->assertStatus($status);
+    $this->actingAs($user)->get('/academic/curriculum')->assertStatus($status);
+})->with([
+    [Role::Director, 200],
+    [Role::AcademicOffice, 200],
+    [Role::Registrar, 403],
+    [Role::Accountant, 403],
+    [Role::HomeroomTeacher, 403],
+    [Role::SubjectTeacher, 403],
+    [Role::Guardian, 403],
+    [Role::Student, 403],
+]);
+
 it('keeps platform pages for platform admins', function () {
     $school = makeSchool();
 

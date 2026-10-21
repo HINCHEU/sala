@@ -196,6 +196,30 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'start_date' => 'start date',
+        'end_date' => 'end date',
+        'number' => 'number',
+        'stage' => 'stage',
+        'category' => 'category',
+        'building' => 'building',
+        'capacity' => 'seats',
+        'shift' => 'shift',
+        'academic_year_id' => 'academic year',
+        'grade_level_id' => 'grade',
+        'track_id' => 'track',
+        'room_id' => 'room',
+        'divisor' => 'divisor',
+        'sort' => 'order',
+        'rows.*.max_score' => 'max score',
+        'rows.*.coefficient' => 'coefficient',
+        'rows.*.pass_score' => 'pass score',
+        'rows.*.subject_id' => 'subject',
+        'bands.*.min' => 'from',
+        'bands.*.max' => 'to',
+        'bands.*.mention_km' => 'Khmer name',
+        'bands.*.mention_en' => 'English name',
+        'bands.*.letter' => 'letter',
+    ],
 
 ];

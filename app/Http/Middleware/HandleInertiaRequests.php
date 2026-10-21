@@ -64,6 +64,7 @@ class HandleInertiaRequests extends Middleware
                 'platform' => (bool) $user?->is_platform_admin,
                 'manageSettings' => $school && $user?->can(Permission::ManageSettings->value),
                 'manageMembers' => $school && $user?->can(Permission::ManageMembers->value),
+                'manageAcademic' => $school && $user?->can(Permission::ManageAcademic->value),
             ],
             'flash' => fn () => [
                 'success' => $request->session()->get('success'),

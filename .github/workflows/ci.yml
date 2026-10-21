@@ -116,4 +116,5 @@ jobs:
             docker compose -f compose.yaml pull
             docker compose -f compose.yaml up -d --remove-orphans
             docker compose -f compose.yaml exec -T app php artisan migrate --force
+            docker compose -f compose.yaml exec -T app php artisan sala:sync-roles
             docker compose -f compose.yaml exec -T app php artisan horizon:terminate

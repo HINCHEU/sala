@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { Building2, House, LogOut, Menu, Settings, ShieldCheck, Users, X } from 'lucide-vue-next';
+import { Building2, GraduationCap, House, LogOut, Menu, Settings, ShieldCheck, Users, X } from 'lucide-vue-next';
 import SchoolBrand from '@/Components/SchoolBrand.vue';
 import SchoolSwitcher from '@/Components/SchoolSwitcher.vue';
 import LocaleSwitcher from '@/Components/LocaleSwitcher.vue';
@@ -16,6 +16,13 @@ const open = ref(false);
 const nav = computed(() =>
     [
         { href: '/', label: 'app.dashboard', icon: House, show: true },
+        {
+            href: '/academic/years',
+            match: '/academic',
+            label: 'academic.title',
+            icon: GraduationCap,
+            show: page.props.can.manageAcademic,
+        },
         { href: '/members', label: 'app.members', icon: Users, show: page.props.can.manageMembers },
         { href: '/settings', label: 'app.settings', icon: Settings, show: page.props.can.manageSettings },
         { href: '/platform/schools', label: 'app.platform_schools', icon: Building2, show: page.props.can.platform },
@@ -23,7 +30,7 @@ const nav = computed(() =>
     ].filter((item) => item.show),
 );
 
-const isActive = (href) => (href === '/' ? page.url === '/' : page.url.startsWith(href));
+const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.startsWith(item.match ?? item.href));
 </script>
 
 <template>
@@ -69,10 +76,8 @@ const isActive = (href) => (href === '/' ? page.url === '/' : page.url.startsWit
                     :key="item.href"
                     :href="item.href"
                     class="flex min-h-11 items-center gap-3 rounded-md px-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                    :class="
-                        isActive(item.href) ? 'bg-primary-soft font-semibold text-primary' : 'hover:bg-surface-raised'
-                    "
-                    :aria-current="isActive(item.href) ? 'page' : undefined"
+                    :class="isActive(item) ? 'bg-primary-soft font-semibold text-primary' : 'hover:bg-surface-raised'"
+                    :aria-current="isActive(item) ? 'page' : undefined"
                     @click="open = false"
                 >
                     <component :is="item.icon" :size="20" :stroke-width="1.75" aria-hidden="true" />

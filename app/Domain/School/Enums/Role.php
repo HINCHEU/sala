@@ -20,7 +20,8 @@ enum Role: string
     public function permissions(): array
     {
         return match ($this) {
-            self::Director => [Permission::ManageSettings->value, Permission::ManageMembers->value],
+            self::Director => [Permission::ManageSettings->value, Permission::ManageMembers->value, Permission::ManageAcademic->value],
+            self::AcademicOffice => [Permission::ManageAcademic->value],
             default => [],
         };
     }

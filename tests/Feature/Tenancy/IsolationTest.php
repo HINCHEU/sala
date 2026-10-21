@@ -1,5 +1,9 @@
 <?php
 
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Academic\Models\GradeLevel;
+use App\Domain\Academic\Models\Subject;
+use App\Domain\Academic\MoeysTemplate;
 use App\Domain\School\Actions\AddMember;
 use App\Domain\School\Actions\InviteMember;
 use App\Domain\School\Enums\Role;
@@ -86,4 +90,37 @@ it('keeps role assignments per school', function () {
         ->assertInertia(fn ($page) => $page->where('roles', ['subject_teacher']));
     $this->actingAs($teacher->fresh())->withSession(['school_id' => $this->schoolB->id])->get('/')
         ->assertInertia(fn ($page) => $page->where('roles', ['guardian']));
+});
+
+it('404s when a route binds another school\'s record', function (string $method, string $uri) {
+    $officeA = member($this->schoolA, Role::AcademicOffice);
+    $subject = app(CurrentSchool::class)->runAs($this->schoolB, fn () => Subject::create([
+        'code' => 'MATH', 'name_km' => 'គណិតវិទ្យា', 'name_en' => 'Mathematics', 'category' => 'science',
+    ]));
+
+    $this->actingAs($officeA)
+        ->call($method, str_replace('{id}', (string) $subject->id, $uri), [
+            'code' => 'HACK', 'name_km' => 'x', 'name_en' => 'x', 'category' => 'other',
+        ])
+        ->assertNotFound();
+
+    expect($subject->fresh()->code)->toBe('MATH');
+})->with([
+    ['PUT', '/academic/subjects/{id}'],
+    ['DELETE', '/academic/subjects/{id}'],
+]);
+
+it('refuses another school\'s grade when creating a class', function () {
+    $officeA = member($this->schoolA, Role::AcademicOffice);
+    $current = app(CurrentSchool::class);
+    $yearA = $current->runAs($this->schoolA, fn () => AcademicYear::create([
+        'name' => '2026–2027', 'start_date' => '2026-11-01', 'end_date' => '2027-08-31',
+    ]));
+    $gradeB = $current->runAs($this->schoolB, fn () => GradeLevel::create(
+        MoeysTemplate::grade(7)
+    ));
+
+    $this->actingAs($officeA)->post('/academic/classrooms', [
+        'academic_year_id' => $yearA->id, 'grade_level_id' => $gradeB->id, 'name' => '7A', 'shift' => 'morning',
+    ])->assertSessionHasErrors('grade_level_id');
 });
