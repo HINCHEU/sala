@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        // Telescope is a dev dependency: absent from the production image, so register it only when installed.
+        if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+            $this->app->register(TelescopeServiceProvider::class);
+        }
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Model::preventLazyLoading(! $this->app->isProduction());
+    }
+}

@@ -1,0 +1,9 @@
+public/
+vendor/
+storage/
+bootstrap/
+lang/php_*.json
+*.md
+*.php
+package-lock.json
+composer.lock

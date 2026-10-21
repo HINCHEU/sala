@@ -1,0 +1,68 @@
+# Production / staging stack. Local development adds compose.override.yaml automatically.
+x-app: &app
+  build:
+    context: .
+    target: app
+  image: ${APP_IMAGE:-sala-app}
+  env_file: .env
+  restart: unless-stopped
+  volumes:
+    - app-storage:/var/www/html/storage/app
+  depends_on:
+    mysql:
+      condition: service_healthy
+    redis:
+      condition: service_started
+
+services:
+  nginx:
+    build:
+      context: .
+      target: web
+    image: ${WEB_IMAGE:-sala-web}
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - app-storage:/var/www/html/storage/app:ro
+    depends_on:
+      - app
+
+  app:
+    <<: *app
+
+  worker:
+    <<: *app
+    command: ["supervisord", "-c", "/etc/supervisord.conf"]
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-${DB_PASSWORD}}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${DB_ROOT_PASSWORD:-${DB_PASSWORD}}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    restart: unless-stopped
+
+volumes:
+  app-storage:
+  mysql-data:
+  redis-data:

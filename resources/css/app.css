@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Self-hosted Khmer fonts: interface (Kantumruy Pro, Noto Sans Khmer fallback) and documents. */
+@import '@fontsource/kantumruy-pro/400.css';
+@import '@fontsource/kantumruy-pro/500.css';
+@import '@fontsource/kantumruy-pro/600.css';
+@import '@fontsource/kantumruy-pro/700.css';
+@import '@fontsource/noto-sans-khmer/khmer-400.css';
+@import '@fontsource/battambang/khmer-400.css';
+@import '@fontsource/siemreap/khmer-400.css';
+@import '@fontsource/moul/khmer-400.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.vue';
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+    --color-surface: var(--surface);
+    --color-surface-raised: var(--surface-raised);
+    --color-surface-sunken: var(--surface-sunken);
+    --color-border: var(--border);
+    --color-border-strong: var(--border-strong);
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-primary: var(--primary);
+    --color-on-primary: var(--on-primary);
+    --color-primary-soft: var(--primary-soft);
+    --color-gold: var(--gold);
+    --color-on-gold: var(--on-gold);
+    --color-success: var(--success);
+    --color-success-soft: var(--success-soft);
+    --color-warning: var(--warning);
+    --color-warning-soft: var(--warning-soft);
+    --color-danger: var(--danger);
+    --color-danger-soft: var(--danger-soft);
+    --shadow-sm: var(--shadow-sm);
+    --shadow-lg: var(--shadow-lg);
+}
+
+body {
+    @apply bg-surface text-ink font-sans;
+    line-height: 1.75;
+}
