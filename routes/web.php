@@ -14,6 +14,13 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\People\EnrollmentController;
+use App\Http\Controllers\People\GuardianController;
+use App\Http\Controllers\People\StudentController;
+use App\Http\Controllers\People\StudentDocumentController;
+use App\Http\Controllers\People\StudentGuardianController;
+use App\Http\Controllers\People\StudentImportController;
+use App\Http\Controllers\People\TeacherController;
 use App\Http\Controllers\Platform\SchoolController;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +79,32 @@ Route::middleware('auth')->group(function () {
 
                 Route::get('/grading', [GradingScaleController::class, 'index'])->name('grading.index');
                 Route::put('/grading/{stage}', [GradingScaleController::class, 'update'])->name('grading.update');
+            });
+
+            Route::middleware('can:'.Permission::ManagePeople->value)->prefix('people')->name('people.')->group(function () {
+                Route::resource('students', StudentController::class)->except(['destroy']);
+                Route::post('/students/{student}/guardians', [StudentGuardianController::class, 'store'])->name('students.guardians.store');
+                Route::put('/students/{student}/guardians/{guardian}', [StudentGuardianController::class, 'update'])->name('students.guardians.update');
+                Route::delete('/students/{student}/guardians/{guardian}', [StudentGuardianController::class, 'destroy'])->name('students.guardians.destroy');
+                Route::post('/students/{student}/documents', [StudentDocumentController::class, 'store'])->name('students.documents.store');
+                Route::delete('/students/{student}/documents/{document}', [StudentDocumentController::class, 'destroy'])->name('students.documents.destroy');
+
+                Route::get('/guardians', [GuardianController::class, 'index'])->name('guardians.index');
+                Route::get('/guardians/lookup', [StudentGuardianController::class, 'lookup'])->name('guardians.lookup');
+
+                Route::resource('teachers', TeacherController::class)->except(['show', 'destroy']);
+                Route::post('/teachers/{teacher}/invite', [TeacherController::class, 'invite'])->name('teachers.invite');
+
+                Route::get('/enrollment', [EnrollmentController::class, 'index'])->name('enrollment.index');
+                Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollment.store');
+                Route::put('/enrollments', [EnrollmentController::class, 'move'])->name('enrollment.move');
+                Route::delete('/enrollments', [EnrollmentController::class, 'destroy'])->name('enrollment.destroy');
+
+                Route::get('/import', [StudentImportController::class, 'create'])->name('import.create');
+                Route::get('/import/template', [StudentImportController::class, 'template'])->name('import.template');
+                Route::post('/import', [StudentImportController::class, 'store'])->name('import.store');
+                Route::get('/import/{import}', [StudentImportController::class, 'show'])->name('import.show');
+                Route::post('/import/{import}/confirm', [StudentImportController::class, 'confirm'])->name('import.confirm');
             });
 
             Route::middleware('can:'.Permission::ManageMembers->value)->group(function () {

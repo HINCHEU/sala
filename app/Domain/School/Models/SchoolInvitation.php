@@ -17,7 +17,7 @@ class SchoolInvitation extends Model
 {
     use BelongsToSchool;
 
-    protected $fillable = ['school_id', 'email', 'phone', 'role', 'token_hash', 'invited_by', 'expires_at'];
+    protected $fillable = ['school_id', 'email', 'phone', 'role', 'teacher_id', 'token_hash', 'invited_by', 'expires_at'];
 
     protected function casts(): array
     {

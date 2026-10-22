@@ -8,6 +8,8 @@ use App\Domain\Academic\Models\Classroom;
 use App\Domain\Academic\Models\GradeLevel;
 use App\Domain\Academic\Models\Room;
 use App\Domain\Academic\Models\Track;
+use App\Domain\People\Enums\TeacherStatus;
+use App\Domain\People\Models\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Academic\ClassroomRequest;
 use Illuminate\Http\RedirectResponse;
@@ -30,6 +32,7 @@ class ClassroomController extends Controller
             'grades' => GradeLevel::orderBy('number')->get(['id', 'name_km', 'name_en', 'has_tracks']),
             'tracks' => Track::orderBy('code')->get(['id', 'name_km', 'name_en']),
             'rooms' => Room::orderBy('name')->get(['id', 'name']),
+            'teachers' => Teacher::where('status', TeacherStatus::Active)->orderBy('name_km')->get(['id', 'name_km']),
             'shifts' => array_column(Shift::cases(), 'value'),
         ]);
     }

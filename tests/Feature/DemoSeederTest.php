@@ -1,5 +1,7 @@
 <?php
 
+use App\Domain\People\Models\Enrollment;
+use App\Domain\People\Models\Guardian;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Support\Facades\Storage;
@@ -16,4 +18,8 @@ it('seeds demo accounts that sign in with "password"', function () {
     $this->post('/login', ['login' => 'admin@sala.test', 'password' => 'password'])->assertRedirect('/');
     $this->assertAuthenticatedAs($admin);
     expect(User::where('email', 'director@demo1.sala.test')->exists())->toBeTrue();
+
+    // Each demo school: 8 students in 7A numbered by Khmer name, siblings sharing a guardian.
+    expect(Enrollment::withoutGlobalScope('school')->count())->toBe(16)
+        ->and(Guardian::withoutGlobalScope('school')->count())->toBe(12);
 });

@@ -75,7 +75,7 @@ return [
     ],
     'track_required' => 'This grade has tracks. Choose one.',
     'track_not_used' => 'This grade has no tracks.',
-    'homeroom_later' => 'Homeroom teachers can be set once teachers are added.',
+    'homeroom_teacher' => 'Homeroom teacher',
     'no_year' => 'Create an academic year first.',
 
     'curriculum_hint' => 'Tick the subjects taught in this grade, then fill in the max score, coefficient and pass score.',

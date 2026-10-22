@@ -47,4 +47,8 @@ return [
     'no_school_text' => 'Ask your school director to send you an invitation link, then open it on this device.',
     'dashboard_empty_title' => 'Nothing to do yet',
     'dashboard_empty_text' => 'Classes, students and scores will appear here once the school sets up its academic year.',
+    'pagination' => 'Pages',
+    'previous' => 'Previous',
+    'next' => 'Next',
+    'page_of' => 'Page :page of :pages',
 ];

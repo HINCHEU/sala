@@ -18,6 +18,7 @@ class ClassroomRequest extends SchoolRequest
             'grade_level_id' => ['required', $this->existsInSchool('grade_levels')],
             'track_id' => ['nullable', $this->existsInSchool('tracks')],
             'room_id' => ['nullable', $this->existsInSchool('rooms')],
+            'homeroom_teacher_id' => ['nullable', $this->existsInSchool('teachers')],
             'name' => [
                 'required', 'string', 'max:20',
                 $this->uniqueInSchool('classrooms', 'name', $this->route('classroom'))

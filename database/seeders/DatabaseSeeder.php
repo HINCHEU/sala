@@ -8,7 +8,17 @@ use App\Domain\Academic\Enums\Shift;
 use App\Domain\Academic\Models\Classroom;
 use App\Domain\Academic\Models\GradeLevel;
 use App\Domain\Academic\Models\Room;
+use App\Domain\Academic\Models\Subject;
 use App\Domain\Academic\Models\Track;
+use App\Domain\People\Actions\EnrollStudents;
+use App\Domain\People\Actions\LinkGuardian;
+use App\Domain\People\Actions\SaveStudent;
+use App\Domain\People\Actions\SaveTeacher;
+use App\Domain\People\Enums\EmploymentType;
+use App\Domain\People\Enums\Gender;
+use App\Domain\People\Enums\Relationship;
+use App\Domain\People\Enums\StudentStatus;
+use App\Domain\People\Enums\TeacherStatus;
 use App\Domain\School\Actions\AddMember;
 use App\Domain\School\Actions\CreateSchool;
 use App\Domain\School\BrandColor;
@@ -60,7 +70,10 @@ class DatabaseSeeder extends Seeder
                 'brand_color_soft' => $color ? BrandColor::soft($color) : null,
             ]);
             $this->logo($school, $color ?? '#1f4fbf');
-            app(CurrentSchool::class)->runAs($school, fn () => $this->academicYear());
+            app(CurrentSchool::class)->runAs($school, function () {
+                $this->academicYear();
+                $this->people();
+            });
 
             foreach (Role::cases() as $i => $role) {
                 $user = $this->demoUser([
@@ -100,6 +113,48 @@ class DatabaseSeeder extends Seeder
                 'room_id' => $roomId, 'capacity' => 45,
             ]);
         }
+    }
+
+    /** Two teachers (one is 7A's homeroom teacher) and eight students in 7A, two pairs of them siblings. */
+    private function people(): void
+    {
+        $subjects = fn (string ...$codes) => Subject::whereIn('code', $codes)->pluck('id')->all();
+        $homeroom = app(SaveTeacher::class)->handle(null, [
+            'name_km' => 'ហេង សុភាព', 'name_en' => 'Heng Sopheap', 'gender' => Gender::Male, 'employment_type' => EmploymentType::CivilServant,
+            'status' => TeacherStatus::Active, 'staff_code' => 'T-001',
+        ], $subjects('MATH', 'PHY'));
+        app(SaveTeacher::class)->handle(null, [
+            'name_km' => 'កែវ ចន្ធូ', 'name_en' => 'Keo Chanthou', 'gender' => Gender::Female, 'employment_type' => EmploymentType::Contract,
+            'status' => TeacherStatus::Active, 'staff_code' => 'T-002',
+        ], $subjects('KHM', 'HIS'));
+
+        $sevenA = Classroom::where('name', '7A')->firstOrFail();
+        $sevenA->update(['homeroom_teacher_id' => $homeroom->id]);
+
+        // [family km, given km, family en, given en, gender, guardian km, guardian phone]
+        $students = [
+            ['សុខ', 'ដារ៉ា', 'Sok', 'Dara', Gender::Female, 'សុខ ចិន្ដា', '+85512300001'],
+            ['សុខ', 'វិសាល', 'Sok', 'Visal', Gender::Male, 'សុខ ចិន្ដា', '+85512300001'],
+            ['ចាន់', 'សុភា', 'Chan', 'Sophea', Gender::Female, 'ចាន់ ធី', '+85512300002'],
+            ['កែវ', 'មុនី', 'Keo', 'Mony', Gender::Male, 'កែវ សំណាង', '+85512300003'],
+            ['លី', 'ស្រីនិច', 'Ly', 'Sreynich', Gender::Female, 'លី ហួរ', '+85512300004'],
+            ['លី', 'ពិសិដ្ឋ', 'Ly', 'Piseth', Gender::Male, 'លី ហួរ', '+85512300004'],
+            ['ម៉ៅ', 'រតនា', 'Mao', 'Ratana', Gender::Female, 'ម៉ៅ សុខា', '+85512300005'],
+            ['ពៅ', 'វណ្ណា', 'Pov', 'Vanna', Gender::Male, 'ពៅ សារិន', '+85512300006'],
+        ];
+
+        $ids = [];
+        foreach ($students as $i => [$lastKm, $firstKm, $lastEn, $firstEn, $gender, $guardian, $phone]) {
+            $student = app(SaveStudent::class)->handle(null, [
+                'last_name_km' => $lastKm, 'first_name_km' => $firstKm, 'last_name_en' => $lastEn, 'first_name_en' => $firstEn,
+                'gender' => $gender, 'dob' => sprintf('2014-%02d-%02d', $i + 1, 10 + $i), 'birth_province' => 'ភ្នំពេញ',
+                'status' => StudentStatus::Active, 'admitted_at' => '2026-11-01',
+            ]);
+            app(LinkGuardian::class)->handle($student, ['name_km' => $guardian, 'phone' => $phone], ['relationship' => Relationship::Father->value]);
+            $ids[] = $student->id;
+        }
+
+        app(EnrollStudents::class)->handle($sevenA, $ids);
     }
 
     /** A plain coloured disc so each demo school shows its own logo. */

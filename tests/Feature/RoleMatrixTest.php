@@ -38,6 +38,23 @@ it('lets the director and academic office manage the academic structure', functi
     [Role::Student, 403],
 ]);
 
+it('lets the director and registrar manage students, guardians and teachers', function (Role $role, int $status) {
+    $user = member(makeSchool(), $role);
+
+    foreach (['/people/students', '/people/guardians', '/people/teachers', '/people/enrollment', '/people/import'] as $page) {
+        $this->actingAs($user)->get($page)->assertStatus($status);
+    }
+})->with([
+    [Role::Director, 200],
+    [Role::Registrar, 200],
+    [Role::AcademicOffice, 403],
+    [Role::Accountant, 403],
+    [Role::HomeroomTeacher, 403],
+    [Role::SubjectTeacher, 403],
+    [Role::Guardian, 403],
+    [Role::Student, 403],
+]);
+
 it('keeps platform pages for platform admins', function () {
     $school = makeSchool();
 

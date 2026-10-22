@@ -15,6 +15,7 @@ const props = defineProps({
     grades: { type: Array, required: true },
     tracks: { type: Array, required: true },
     rooms: { type: Array, required: true },
+    teachers: { type: Array, required: true },
     shifts: { type: Array, required: true },
 });
 
@@ -49,6 +50,13 @@ const columns = computed(() => [
         nullable: true,
         options: props.rooms.map((r) => ({ value: r.id, label: r.name })),
     },
+    {
+        key: 'homeroom_teacher_id',
+        label: trans('academic.homeroom_teacher'),
+        type: 'select',
+        nullable: true,
+        options: props.teachers.map((t) => ({ value: t.id, label: t.name_km })),
+    },
     { key: 'capacity', label: trans('academic.capacity'), type: 'number', width: 'w-24' },
 ]);
 
@@ -79,7 +87,6 @@ const changeYear = (event) =>
                 base-url="/academic/classrooms"
                 :defaults="{ academic_year_id: yearId, shift: 'morning', grade_level_id: grades[0]?.id ?? '' }"
             />
-            <p class="text-sm leading-6 text-ink-muted">{{ $t('academic.homeroom_later') }}</p>
         </div>
     </AdminLayout>
 </template>

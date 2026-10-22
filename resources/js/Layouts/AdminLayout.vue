@@ -1,7 +1,18 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { Building2, GraduationCap, House, LogOut, Menu, Settings, ShieldCheck, Users, X } from 'lucide-vue-next';
+import {
+    BookUser,
+    Building2,
+    GraduationCap,
+    House,
+    LogOut,
+    Menu,
+    Settings,
+    ShieldCheck,
+    Users,
+    X,
+} from 'lucide-vue-next';
 import SchoolBrand from '@/Components/SchoolBrand.vue';
 import SchoolSwitcher from '@/Components/SchoolSwitcher.vue';
 import LocaleSwitcher from '@/Components/LocaleSwitcher.vue';
@@ -22,6 +33,13 @@ const nav = computed(() =>
             label: 'academic.title',
             icon: GraduationCap,
             show: page.props.can.manageAcademic,
+        },
+        {
+            href: '/people/students',
+            match: '/people',
+            label: 'people.title',
+            icon: BookUser,
+            show: page.props.can.managePeople,
         },
         { href: '/members', label: 'app.members', icon: Users, show: page.props.can.manageMembers },
         { href: '/settings', label: 'app.settings', icon: Settings, show: page.props.can.manageSettings },

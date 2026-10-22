@@ -2,6 +2,7 @@
 
 namespace App\Domain\School\Actions;
 
+use App\Domain\People\Models\Teacher;
 use App\Domain\School\Enums\Role;
 use App\Domain\School\Models\School;
 use App\Domain\School\Models\SchoolInvitation;
@@ -12,8 +13,11 @@ class InviteMember
 {
     public const VALID_DAYS = 7;
 
-    /** Returns the invitation link; the plain token exists only in this link. */
-    public function handle(School $school, Role $role, ?string $email, ?string $phone, ?User $inviter): string
+    /**
+     * Returns the invitation link; the plain token exists only in this link.
+     * With a teacher, accepting the invitation also links the new login to that teacher record.
+     */
+    public function handle(School $school, Role $role, ?string $email, ?string $phone, ?User $inviter, ?Teacher $teacher = null): string
     {
         $token = Str::random(48);
 
@@ -22,6 +26,7 @@ class InviteMember
             'email' => $email,
             'phone' => $phone,
             'role' => $role,
+            'teacher_id' => $teacher?->id,
             'token_hash' => hash('sha256', $token),
             'invited_by' => $inviter?->id,
             'expires_at' => now()->addDays(self::VALID_DAYS),
