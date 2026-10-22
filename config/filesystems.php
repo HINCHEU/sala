@@ -48,10 +48,11 @@ return [
         ],
 
         // School files. Code only ever names these disks; MEDIA_DRIVER switches local <-> S3-compatible
-        // (DO Spaces, R2, MinIO). The local driver ignores the s3 keys and the s3 driver ignores root.
+        // (DO Spaces, R2, MinIO). The local driver ignores the s3 keys. root only applies to local: the s3 driver
+        // would prefix every key with it, and its leading slash made R2 store keys the public URL never matched.
         'media_private' => [
             'driver' => env('MEDIA_DRIVER', 'local'),
-            'root' => storage_path('app/private/media'),
+            'root' => env('MEDIA_DRIVER', 'local') === 'local' ? storage_path('app/private/media') : '',
             'serve' => true,
             'key' => env('MEDIA_KEY'),
             'secret' => env('MEDIA_SECRET'),
@@ -66,7 +67,7 @@ return [
 
         'media_public' => [
             'driver' => env('MEDIA_DRIVER', 'local'),
-            'root' => storage_path('app/public/media'),
+            'root' => env('MEDIA_DRIVER', 'local') === 'local' ? storage_path('app/public/media') : '',
             'url' => env('MEDIA_PUBLIC_URL', '/storage/media'),
             'key' => env('MEDIA_KEY'),
             'secret' => env('MEDIA_SECRET'),
