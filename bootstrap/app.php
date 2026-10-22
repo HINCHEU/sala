@@ -27,6 +27,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Tenant scopes must be on before route model binding, or {subject} could resolve another school's row.
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: ResolveSchool::class);
 
+        // Behind Nginx Proxy Manager TLS ends at the proxy. Trust X-Forwarded-* only from private
+        // (Docker) addresses, so a client reaching a published port cannot fake its IP or scheme.
+        $middleware->trustProxies(at: ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']);
+
         $middleware->alias([
             'two-factor.required' => EnsureTwoFactorEnabled::class,
             'school' => EnsureCurrentSchool::class,

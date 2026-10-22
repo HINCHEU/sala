@@ -10,7 +10,7 @@
 # reaches a server. Every target is safe to re-run. Destructive ones ask first.
 
 SHELL := /bin/bash
-DC    := docker compose -f compose.yaml
+DC    := docker compose -f compose.yaml$(shell grep -qE '^PROXY_NETWORK=.+' .env 2>/dev/null && echo ' -f compose.proxy.yaml')
 DEV   := docker compose
 ART   := $(DC) exec -T app php artisan
 
@@ -173,12 +173,15 @@ doctor:
 	  then chk "Migrations are applied" ok; \
 	  else chk "Migrations are applied" "migrate:status returned nothing — is the database reachable?"; fi; \
 	\
-	code=$$(curl -s -o /dev/null -m 10 -w '%{http_code}' "http://localhost:$${APP_PORT:-8080}/up" 2>/dev/null); \
+	if $(DC) exec -T nginx wget -q -O /dev/null http://127.0.0.1/up 2>/dev/null; \
+	  then chk "nginx reaches PHP" ok; \
+	  else chk "nginx reaches PHP" "/up inside the nginx container failed — see: make logs s=app"; fi; \
+	\
+	code=$$(curl -s -o /dev/null -m 10 -w '%{http_code}' "$$APP_URL/up" 2>/dev/null); \
 	case "$$code" in \
-	  200) chk "The site is answering" ok ;; \
-	  502|504) chk "The site is answering" "$$code — nginx cannot reach PHP; try: docker compose -f compose.yaml restart nginx" ;; \
-	  000) chk "The site is answering" "nothing on port $${APP_PORT:-8080}" ;; \
-	  *) chk "The site is answering" "/up returned $$code" ;; \
+	  200) chk "$$APP_URL answers" ok ;; \
+	  000) chk "$$APP_URL answers" "no answer — DNS record, or the proxy host for it?" ;; \
+	  *) chk "$$APP_URL answers" "/up returned $$code — is the proxy forwarding to http://sala-web:80?" ;; \
 	esac; \
 	\
 	echo; \

@@ -1,0 +1,15 @@
+# A server behind a shared reverse proxy (Nginx Proxy Manager owns 80/443).
+# The Makefile adds this file when .env sets PROXY_NETWORK. nginx then joins
+# that network and publishes no port; the proxy forwards to http://sala-web:80.
+services:
+  nginx:
+    ports: !reset []
+    networks:
+      default:
+      proxy:
+        aliases: [sala-web]
+
+networks:
+  proxy:
+    name: ${PROXY_NETWORK}
+    external: true
