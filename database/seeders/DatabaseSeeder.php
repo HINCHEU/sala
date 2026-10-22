@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Support\Files\FileStore;
 use App\Support\Tenancy\CurrentSchool;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManager;
 
 class DatabaseSeeder extends Seeder
@@ -32,7 +33,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        $this->demoUser([
             'name' => 'អ្នកគ្រប់គ្រងប្រព័ន្ធ',
             'email' => 'admin@sala.test',
             'is_platform_admin' => true,
@@ -62,7 +63,7 @@ class DatabaseSeeder extends Seeder
             app(CurrentSchool::class)->runAs($school, fn () => $this->academicYear());
 
             foreach (Role::cases() as $i => $role) {
-                $user = User::factory()->create([
+                $user = $this->demoUser([
                     'name' => $role->label().' '.$school->code,
                     'email' => "{$role->value}@{$school->code}.sala.test",
                     'phone' => $role === Role::Guardian ? '+85512000'.($n + 1).'01' : null,
@@ -70,6 +71,18 @@ class DatabaseSeeder extends Seeder
                 app(AddMember::class)->handle($school, $user, $role);
             }
         }
+    }
+
+    /**
+     * Not the factory: Faker is a dev dependency, and production runs this seeder too (make seed).
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    private function demoUser(array $attributes): User
+    {
+        static $password;
+
+        return User::forceCreate([...$attributes, 'password' => $password ??= Hash::make('password'), 'email_verified_at' => now()]);
     }
 
     /** MoEYS grades and subjects, the current year and a few classes. Curriculum max scores are left to the school. */
