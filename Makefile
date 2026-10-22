@@ -25,7 +25,7 @@ define get_images
 endef
 
 .DEFAULT_GOAL := help
-.PHONY: help dev setup test lint check install deploy migrate doctor backup restore \
+.PHONY: help dev setup test lint check install deploy migrate seed doctor backup restore \
         logs shell tinker queue-status down up reset
 
 help:
@@ -40,6 +40,7 @@ help:
 	@echo "    install        First deploy: images, key, migrate, roles"
 	@echo "    deploy         Back up, pull, migrate, sync roles, restart workers"
 	@echo "    doctor         Check the deployment invariants — run after every deploy"
+	@echo "    seed           Add the demo schools and accounts (password: password)"
 	@echo "    backup         Dump the database and storage to backups/"
 	@echo "    restore        Restore a database dump (make restore f=backups/db-....sql.gz)"
 	@echo "    logs           Follow logs   (make logs s=worker)"
@@ -133,6 +134,16 @@ deploy: backup
 
 migrate:
 	$(ART) migrate --force
+
+seed:
+	@if grep -qE '^APP_ENV=production' .env; then \
+		echo "!!! This adds the demo schools and their accounts to production. Every account's"; \
+		echo "    password is 'password', including the platform admin admin@sala.test."; \
+		echo "    Anyone who knows that can take over the site: change those passwords at once."; \
+		read -p "    Type 'demo' to seed anyway: " ans; \
+		[ "$$ans" = demo ] || { echo "==> Aborted."; exit 1; }; \
+	fi
+	$(ART) db:seed --force
 
 # -------------------------------------------------------------- doctor ---
 #
