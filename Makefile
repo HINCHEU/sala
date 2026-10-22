@@ -162,7 +162,8 @@ doctor:
 	  then chk "Horizon is running" ok; \
 	  else chk "Horizon is running" "the worker is up but Horizon is not — see: make logs s=worker"; fi; \
 	\
-	if [ -n "$$($(DC) port mysql 3306 2>/dev/null)" ]; \
+	: "Not 'compose port': newer Compose prints ':0' for an unpublished port."; \
+	if $(DC) ps mysql 2>/dev/null | grep -q -- '->'; \
 	  then chk "MySQL is not published" "a host port maps to it — is compose.override.yaml on this server?"; \
 	  else chk "MySQL is not published" ok; fi; \
 	\
