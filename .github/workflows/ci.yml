@@ -53,6 +53,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Dry-runs every target and parses the commands, so a broken recipe fails here, not on the server.
+      - name: Makefile
+        run: for t in $(grep -oE '^[a-z-]+:' Makefile | tr -d :); do make -n "$t" f=x | bash -n || exit 1; done
       - uses: actions/setup-node@v4
         with:
           node-version: 24

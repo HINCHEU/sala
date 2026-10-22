@@ -48,6 +48,8 @@ docker compose exec vite npm run lint          # ESLint + eslint-plugin-vue
 docker compose exec vite npm run format        # Prettier
 ```
 
+With `make` (Linux, macOS, WSL): `make help` lists everything. `make check` runs lint and tests; on a server, `make install` once, then `make deploy` (backs up first) and `make doctor`.
+
 ## How the stack is laid out
 
 - `compose.yaml` is the production/staging stack: `nginx`, `app` (php-fpm), `worker` (Horizon + scheduler under supervisord), `mysql`, `redis`, `gotenberg`.
