@@ -4,6 +4,7 @@ import { House, LogOut, ShieldCheck } from 'lucide-vue-next';
 import SchoolBrand from '@/Components/SchoolBrand.vue';
 import SchoolSwitcher from '@/Components/SchoolSwitcher.vue';
 import LocaleSwitcher from '@/Components/LocaleSwitcher.vue';
+import KhmerPattern from '@/Components/KhmerPattern.vue';
 import { useAppShell } from '@/lib/useAppShell';
 
 // Phone-first layout for teachers (and, until the portal, guardians and students): one column, bottom tabs.
@@ -19,15 +20,20 @@ const tabs = [
 
 <template>
     <Head :title="title" />
-    <div class="min-h-screen pb-20">
+    <div class="relative min-h-screen bg-surface pb-20">
+        <!-- Subtle sovereign watermark pattern -->
+        <KhmerPattern variant="subtle" opacity="0.035" />
+
         <header class="sticky top-0 z-20 border-b border-border bg-surface-raised">
+            <!-- Sovereign gold trim ribbon -->
+            <KhmerPattern variant="ribbon" class="opacity-75" />
             <div class="mx-auto flex max-w-xl items-center justify-between gap-2 px-4 py-2">
                 <SchoolBrand />
                 <LocaleSwitcher />
             </div>
         </header>
 
-        <main class="mx-auto max-w-xl px-4 py-6">
+        <main class="relative z-10 mx-auto max-w-xl px-4 py-6">
             <h1 class="mb-4 text-[22px] leading-9 font-semibold">{{ title }}</h1>
             <div class="mb-4"><SchoolSwitcher /></div>
             <slot />

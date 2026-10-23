@@ -17,6 +17,7 @@ import {
 import SchoolBrand from '@/Components/SchoolBrand.vue';
 import SchoolSwitcher from '@/Components/SchoolSwitcher.vue';
 import LocaleSwitcher from '@/Components/LocaleSwitcher.vue';
+import KhmerPattern from '@/Components/KhmerPattern.vue';
 import { useAppShell } from '@/lib/useAppShell';
 
 // Staff layout: sidebar on desktop, drawer on phones.
@@ -61,20 +62,23 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
 
 <template>
     <Head :title="title" />
-    <div class="min-h-screen lg:flex">
-        <!-- Phone top bar -->
-        <header class="flex items-center gap-2 border-b border-border bg-surface-raised px-4 py-2 lg:hidden">
-            <button
-                type="button"
-                class="s-btn s-btn-ghost px-2"
-                :aria-label="$t('app.menu')"
-                :aria-expanded="open"
-                aria-controls="sidebar"
-                @click="open = true"
-            >
-                <Menu :size="20" :stroke-width="1.75" />
-            </button>
-            <SchoolBrand />
+    <div class="relative min-h-screen bg-surface lg:flex">
+        <!-- Phone top bar with Khmer gold ribbon -->
+        <header class="border-b border-border bg-surface-raised lg:hidden">
+            <KhmerPattern variant="ribbon" class="opacity-75" />
+            <div class="flex items-center gap-2 px-4 py-2">
+                <button
+                    type="button"
+                    class="s-btn s-btn-ghost px-2"
+                    :aria-label="$t('app.menu')"
+                    :aria-expanded="open"
+                    aria-controls="sidebar"
+                    @click="open = true"
+                >
+                    <Menu :size="20" :stroke-width="1.75" />
+                </button>
+                <SchoolBrand />
+            </div>
         </header>
 
         <div v-if="open" class="fixed inset-0 z-30 bg-black/40 lg:hidden" @click="open = false" />
@@ -84,7 +88,7 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
             class="fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-border bg-surface-sunken p-4 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0"
             :class="open ? 'translate-x-0' : '-translate-x-full'"
         >
-            <div class="mb-6 flex items-center justify-between gap-2">
+            <div class="mb-4 flex items-center justify-between gap-2">
                 <SchoolBrand />
                 <button
                     type="button"
@@ -95,6 +99,9 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
                     <X :size="20" :stroke-width="1.75" />
                 </button>
             </div>
+
+            <!-- Subtle Khmer sovereign gold trim in sidebar -->
+            <KhmerPattern variant="ribbon" class="mb-4 opacity-50" />
 
             <nav class="flex-1 space-y-1">
                 <Link
@@ -126,13 +133,17 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
             </div>
         </aside>
 
-        <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6 lg:px-8 lg:py-8">
-            <h1
-                class="mb-6 font-headline text-[22px] leading-8 font-bold tracking-tight text-ink lg:text-[28px] lg:leading-9"
-            >
-                {{ title }}
-            </h1>
-            <slot />
+        <!-- Main Content Area with Subtle Sovereign Vector Watermark -->
+        <main class="relative mx-auto w-full max-w-6xl flex-1 px-4 py-6 lg:px-8 lg:py-8">
+            <KhmerPattern variant="subtle" opacity="0.035" />
+            <div class="relative z-10">
+                <h1
+                    class="mb-6 font-headline text-[22px] leading-8 font-bold tracking-tight text-ink lg:text-[28px] lg:leading-9"
+                >
+                    {{ title }}
+                </h1>
+                <slot />
+            </div>
         </main>
     </div>
 </template>

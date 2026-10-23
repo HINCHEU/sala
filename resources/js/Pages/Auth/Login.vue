@@ -46,17 +46,22 @@ const submit = () => form.post('/login', { onFinish: () => form.reset('password'
                 />
             </SField>
 
-            <div class="flex flex-wrap items-center justify-between gap-2">
-                <label class="flex min-h-11 items-center gap-2 text-sm">
-                    <input v-model="form.remember" type="checkbox" class="size-4 accent-primary" />
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <label
+                    class="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-ink-muted transition-colors hover:text-ink"
+                >
+                    <input v-model="form.remember" type="checkbox" class="size-4 rounded accent-primary" />
                     {{ $t('app.remember') }}
                 </label>
-                <Link href="/forgot-password" class="text-sm text-primary underline-offset-4 hover:underline">
+                <Link
+                    href="/forgot-password"
+                    class="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                >
                     {{ $t('app.forgot_password') }}
                 </Link>
             </div>
 
-            <SButton type="submit" variant="primary" class="w-full" :loading="form.processing">
+            <SButton type="submit" variant="primary" class="w-full shadow-md" :loading="form.processing">
                 {{ form.processing ? $t('app.signing_in') : $t('app.sign_in') }}
             </SButton>
         </form>
