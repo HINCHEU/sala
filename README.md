@@ -62,11 +62,11 @@ With `make` (Linux, macOS, WSL): `make help` lists everything. `make check` runs
 - `main` is always deployable. Short-lived feature branches, squash merge, conventional commits (`feat:`, `fix:`).
 - JavaScript only: `.js` files and `<script setup>`; no `lang="ts"`.
 - All interface text in `lang/km/*.php` and `lang/en/*.php`, used in Vue with `$t('file.key')`.
-- Styling uses the Sala tokens in `resources/css/tokens.css` (see `docs/3-Sala-Design-System.md`).
+- Styling uses the MoEYS Sovereign Standard design tokens in `resources/css/tokens.css` (see `docs/design.md`).
 
 ## Docs
 
 - [Architecture plan](docs/1-Architecture-Plan.md)
 - [Implementation plan](docs/2-Implementation-Plan.md)
-- [Sala design system](docs/3-Sala-Design-System.md)
+- [MoEYS Sovereign Standard design system](docs/design.md)
 - [Architecture decision records](docs/adr/)

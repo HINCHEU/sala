@@ -8,6 +8,7 @@ import PeopleTabs from '@/Components/PeopleTabs.vue';
 import GuardianForm from '@/Components/GuardianForm.vue';
 import SButton from '@/Components/SButton.vue';
 import SField from '@/Components/SField.vue';
+import StatusPill from '@/Components/StatusPill.vue';
 import { confirmDanger } from '@/lib/alert';
 
 const props = defineProps({
@@ -73,8 +74,7 @@ async function removeDocument(doc) {
 }
 
 const kb = (bytes) => `${Math.max(1, Math.round(bytes / 1024))} KB`;
-const card = 'rounded-md border border-border bg-surface-raised p-4 shadow-sm sm:p-6';
-const badge = 'rounded-full px-2.5 text-[13px] leading-[22px] font-medium whitespace-nowrap';
+const card = 'rounded-lg border border-border bg-surface-raised p-4 shadow-sm sm:p-6';
 </script>
 
 <template>
@@ -87,41 +87,38 @@ const badge = 'rounded-full px-2.5 text-[13px] leading-[22px] font-medium whites
                     v-if="s.photo_url"
                     :src="s.photo_url"
                     :alt="$t('people.photo_of', { name: s.name_km })"
-                    class="size-24 rounded-md border border-border object-cover"
+                    class="size-24 rounded border border-border object-cover"
                 />
                 <div
                     v-else
-                    class="flex size-24 items-center justify-center rounded-md bg-surface-sunken text-3xl font-semibold text-ink-muted"
+                    class="flex size-24 items-center justify-center rounded bg-surface-sunken font-headline text-3xl font-bold text-ink-muted"
                     aria-hidden="true"
                 >
                     {{ s.first_name_km?.charAt(0) }}
                 </div>
                 <div class="min-w-0 flex-1">
-                    <p v-if="s.name_en" lang="en" class="text-ink-muted">{{ s.name_en }}</p>
-                    <p class="mt-1 flex flex-wrap items-center gap-2 text-sm">
-                        <span class="font-mono tabular-nums">{{ s.student_code }}</span>
-                        <span
-                            :class="[
-                                badge,
-                                s.status === 'active' ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning',
-                            ]"
-                        >
+                    <p v-if="s.name_en" lang="en" class="text-sm font-normal text-ink-muted">{{ s.name_en }}</p>
+                    <p class="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                        <span class="font-mono text-xs font-semibold tabular-nums text-primary">{{
+                            s.student_code
+                        }}</span>
+                        <StatusPill :status="s.status === 'active' ? 'approved' : 'warning'">
                             {{ $t(`people.statuses.${s.status}`) }}
-                        </span>
-                        <span v-if="enrollments[0]" :class="[badge, 'bg-primary-soft text-primary']">
+                        </StatusPill>
+                        <StatusPill v-if="enrollments[0]" status="submitted">
                             {{ enrollments[0].classroom }} · {{ enrollments[0].year }}
-                        </span>
+                        </StatusPill>
                     </p>
                 </div>
                 <Link :href="`/people/students/${s.id}/edit`" class="s-btn">
-                    <Pencil :size="18" :stroke-width="1.75" aria-hidden="true" />
+                    <Pencil :size="16" :stroke-width="1.75" aria-hidden="true" />
                     {{ $t('academic.edit') }}
                 </Link>
             </section>
 
             <div class="grid gap-6 lg:grid-cols-2">
                 <section :class="card" aria-labelledby="details-title">
-                    <h2 id="details-title" class="mb-3 text-lg leading-[30px] font-semibold">
+                    <h2 id="details-title" class="mb-3 font-headline text-base leading-6 font-bold text-ink">
                         {{ $t('people.identity') }}
                     </h2>
                     <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
@@ -207,12 +204,12 @@ const badge = 'rounded-full px-2.5 text-[13px] leading-[22px] font-medium whites
                                 </p>
                                 <p class="mt-1 flex flex-wrap items-center gap-2 text-sm">
                                     <span>{{ $t(`people.relationships.${g.relationship}`) }}</span>
-                                    <span v-if="g.is_primary_contact" :class="[badge, 'bg-primary-soft text-primary']">
+                                    <StatusPill v-if="g.is_primary_contact" status="submitted">
                                         {{ $t('people.primary_contact') }}
-                                    </span>
-                                    <span v-if="!g.can_pickup" :class="[badge, 'bg-warning-soft text-warning']">
+                                    </StatusPill>
+                                    <StatusPill v-if="!g.can_pickup" status="warning">
                                         {{ $t('people.no_pickup') }}
-                                    </span>
+                                    </StatusPill>
                                 </p>
                                 <p v-if="g.phone" class="mt-1 text-sm">
                                     <a

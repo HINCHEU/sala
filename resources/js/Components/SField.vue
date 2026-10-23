@@ -12,9 +12,9 @@ const describedBy = [props.hint && `${props.id}-hint`, `${props.id}-error`].filt
 
 <template>
     <div>
-        <label :for="id" class="mb-1 block text-[13px] leading-[22px] font-medium">{{ label }}</label>
+        <label :for="id" class="mb-1 block text-xs font-semibold text-ink">{{ label }}</label>
         <slot :describedby="describedBy" :invalid="!!error" />
-        <p v-if="hint" :id="`${id}-hint`" class="mt-1 text-sm leading-6 text-ink-muted">{{ hint }}</p>
-        <p v-if="error" :id="`${id}-error`" class="mt-1 text-sm leading-6 text-danger">{{ error }}</p>
+        <p v-if="hint" :id="`${id}-hint`" class="mt-1 text-xs leading-5 text-ink-muted">{{ hint }}</p>
+        <p v-if="error" :id="`${id}-error`" class="mt-1 text-xs leading-5 font-medium text-danger">{{ error }}</p>
     </div>
 </template>

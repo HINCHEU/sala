@@ -73,7 +73,7 @@ const toggleCandidates = () => {
     selectedCandidates.value =
         selectedCandidates.value.length === props.candidates.length ? [] : props.candidates.map((c) => c.id);
 };
-const panel = 'rounded-md border border-border bg-surface-raised shadow-sm';
+const panel = 'rounded-lg border border-border bg-surface-raised shadow-sm';
 </script>
 
 <template>
@@ -91,9 +91,7 @@ const panel = 'rounded-md border border-border bg-surface-raised shadow-sm';
         <div v-else class="space-y-4">
             <div class="flex flex-wrap items-end gap-3">
                 <div>
-                    <label for="year" class="mb-1 block text-[13px] leading-[22px] font-medium">{{
-                        $t('academic.year')
-                    }}</label>
+                    <label for="year" class="mb-1 block text-xs font-medium text-ink">{{ $t('academic.year') }}</label>
                     <select
                         id="year"
                         class="s-input"
@@ -104,7 +102,7 @@ const panel = 'rounded-md border border-border bg-surface-raised shadow-sm';
                     </select>
                 </div>
                 <div>
-                    <label for="classroom" class="mb-1 block text-[13px] leading-[22px] font-medium">{{
+                    <label for="classroom" class="mb-1 block text-xs font-medium text-ink">{{
                         $t('people.classroom')
                     }}</label>
                     <select
@@ -122,13 +120,20 @@ const panel = 'rounded-md border border-border bg-surface-raised shadow-sm';
 
             <div class="grid gap-4 lg:grid-cols-2">
                 <section :class="panel" aria-labelledby="enrolled-title">
-                    <header class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
-                        <h2 id="enrolled-title" class="text-lg leading-[30px] font-semibold">
+                    <header
+                        class="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-sunken/30 px-4 py-3"
+                    >
+                        <h2 id="enrolled-title" class="font-headline text-base leading-6 font-bold text-ink">
                             {{ $t('people.in_class', { name: classroom.name }) }}
                         </h2>
-                        <span class="text-sm text-ink-muted tabular-nums">
-                            {{ $t('people.total_female', { total: enrolled.length, female: females(enrolled) }) }}
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-xs font-semibold tabular-nums text-ink-muted">
+                                {{ $t('people.count', { count: enrolled.length }) }}
+                            </span>
+                            <span class="s-kpi-female">
+                                {{ $t('people.female_split', { count: females(enrolled) }) }}
+                            </span>
+                        </div>
                     </header>
 
                     <p v-if="enrolled.length === 0" class="px-4 py-6 text-center text-sm text-ink-muted">
@@ -168,35 +173,43 @@ const panel = 'rounded-md border border-border bg-surface-raised shadow-sm';
                         </div>
                         <div class="max-h-[60vh] overflow-y-auto">
                             <table class="w-full text-sm">
-                                <thead class="sticky top-0 bg-surface-sunken text-left">
+                                <thead
+                                    class="sticky top-0 border-b border-border bg-surface-sunken text-left text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                                >
                                     <tr>
-                                        <th scope="col" class="w-10 px-3 py-2">
+                                        <th scope="col" class="w-10 px-3 py-2.5">
                                             <input
                                                 type="checkbox"
-                                                class="size-5 accent-primary"
+                                                class="size-4 rounded-sm accent-primary"
                                                 :checked="selectedEnrolled.length === enrolled.length"
                                                 :aria-label="$t('people.select_all')"
                                                 @change="toggleEnrolled"
                                             />
                                         </th>
-                                        <th scope="col" class="px-2 py-2 font-medium">{{ $t('people.roll_no') }}</th>
-                                        <th scope="col" class="px-2 py-2 font-medium">{{ $t('people.name') }}</th>
-                                        <th scope="col" class="px-2 py-2 font-medium">{{ $t('people.gender') }}</th>
+                                        <th scope="col" class="px-3 py-2.5">{{ $t('people.roll_no') }}</th>
+                                        <th scope="col" class="px-3 py-2.5">{{ $t('people.name') }}</th>
+                                        <th scope="col" class="px-3 py-2.5">{{ $t('people.gender') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-border">
-                                    <tr v-for="e in enrolled" :key="e.id">
-                                        <td class="px-3 py-1">
+                                    <tr
+                                        v-for="e in enrolled"
+                                        :key="e.id"
+                                        class="transition-colors hover:bg-slate-50/70"
+                                    >
+                                        <td class="px-3 py-2">
                                             <input
                                                 v-model="selectedEnrolled"
                                                 type="checkbox"
                                                 :value="e.id"
-                                                class="size-5 accent-primary"
+                                                class="size-4 rounded-sm accent-primary"
                                                 :aria-label="e.name_km"
                                             />
                                         </td>
-                                        <td class="px-2 py-1 tabular-nums">{{ e.roll_no }}</td>
-                                        <td class="px-2 py-1">
+                                        <td class="px-3 py-2 font-mono text-xs tabular-nums text-ink-muted">
+                                            {{ e.roll_no }}
+                                        </td>
+                                        <td class="px-3 py-2 font-medium">
                                             {{ e.name_km }}
                                             <span class="font-mono text-[12px] text-ink-muted">{{
                                                 e.student_code
@@ -255,39 +268,45 @@ const panel = 'rounded-md border border-border bg-surface-raised shadow-sm';
                         </div>
                         <div class="max-h-[60vh] overflow-y-auto">
                             <table class="w-full text-sm">
-                                <thead class="sticky top-0 bg-surface-sunken text-left">
+                                <thead
+                                    class="sticky top-0 border-b border-border bg-surface-sunken text-left text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                                >
                                     <tr>
-                                        <th scope="col" class="w-10 px-3 py-2">
+                                        <th scope="col" class="w-10 px-3 py-2.5">
                                             <input
                                                 type="checkbox"
-                                                class="size-5 accent-primary"
+                                                class="size-4 rounded-sm accent-primary"
                                                 :checked="selectedCandidates.length === candidates.length"
                                                 :aria-label="$t('people.select_all')"
                                                 @change="toggleCandidates"
                                             />
                                         </th>
-                                        <th scope="col" class="px-2 py-2 font-medium">{{ $t('people.name') }}</th>
-                                        <th scope="col" class="px-2 py-2 font-medium">{{ $t('people.gender') }}</th>
+                                        <th scope="col" class="px-3 py-2.5">{{ $t('people.name') }}</th>
+                                        <th scope="col" class="px-3 py-2.5">{{ $t('people.gender') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-border">
-                                    <tr v-for="c in candidates" :key="c.id">
-                                        <td class="px-3 py-1">
+                                    <tr
+                                        v-for="c in candidates"
+                                        :key="c.id"
+                                        class="transition-colors hover:bg-slate-50/70"
+                                    >
+                                        <td class="px-3 py-2">
                                             <input
                                                 v-model="selectedCandidates"
                                                 type="checkbox"
                                                 :value="c.id"
-                                                class="size-5 accent-primary"
+                                                class="size-4 rounded-sm accent-primary"
                                                 :aria-label="c.name_km"
                                             />
                                         </td>
-                                        <td class="px-2 py-1">
+                                        <td class="px-3 py-2 font-medium">
                                             {{ c.name_km }}
-                                            <span class="font-mono text-[12px] text-ink-muted">{{
+                                            <span class="block font-mono text-xs text-ink-muted">{{
                                                 c.student_code
                                             }}</span>
                                         </td>
-                                        <td class="px-2 py-1">{{ $t(`people.genders.${c.gender}`) }}</td>
+                                        <td class="px-3 py-2 text-ink-muted">{{ $t(`people.genders.${c.gender}`) }}</td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -43,7 +43,7 @@ const apply = () =>
                 :title="q ? $t('people.no_match') : $t('people.no_guardians')"
             />
 
-            <section v-else class="rounded-md border border-border bg-surface-raised shadow-sm">
+            <section v-else class="rounded-lg border border-border bg-surface-raised shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <caption class="sr-only">
@@ -51,35 +51,37 @@ const apply = () =>
                                 $t('people.tabs.guardians')
                             }}
                         </caption>
-                        <thead class="bg-surface-sunken text-left">
+                        <thead
+                            class="border-b border-border bg-surface-sunken text-left text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                        >
                             <tr>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.name') }}</th>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.phone') }}</th>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.occupation') }}</th>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.children') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.name') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.phone') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.occupation') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.children') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border">
-                            <tr v-for="g in guardians.data" :key="g.id">
-                                <td class="px-3 py-2">
-                                    <span class="font-semibold">{{ g.name_km }}</span>
-                                    <span v-if="g.name_en" lang="en" class="block text-[13px] text-ink-muted">{{
+                            <tr v-for="g in guardians.data" :key="g.id" class="transition-colors hover:bg-slate-50/70">
+                                <td class="px-3.5 py-2.5">
+                                    <span class="font-semibold text-ink">{{ g.name_km }}</span>
+                                    <span v-if="g.name_en" lang="en" class="block text-xs text-ink-muted">{{
                                         g.name_en
                                     }}</span>
                                 </td>
-                                <td class="px-3 py-2 tabular-nums">
+                                <td class="px-3.5 py-2.5 font-mono text-xs tabular-nums">
                                     <a v-if="g.phone" :href="`tel:${g.phone}`" class="text-primary hover:underline">{{
                                         g.phone
                                     }}</a>
-                                    <span v-else>—</span>
+                                    <span v-else class="text-ink-muted">—</span>
                                 </td>
-                                <td class="px-3 py-2">{{ g.occupation ?? '—' }}</td>
-                                <td class="px-3 py-2">
+                                <td class="px-3.5 py-2.5">{{ g.occupation ?? '—' }}</td>
+                                <td class="px-3.5 py-2.5">
                                     <template v-for="(child, i) in g.children" :key="child.id">
                                         <span v-if="i">, </span>
                                         <Link
                                             :href="`/people/students/${child.id}`"
-                                            class="text-primary hover:underline"
+                                            class="font-medium text-ink hover:text-primary hover:underline"
                                             >{{ child.name }}</Link
                                         >
                                     </template>

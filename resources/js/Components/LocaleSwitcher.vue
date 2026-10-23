@@ -21,16 +21,22 @@ function change(locale) {
 </script>
 
 <template>
-    <div role="group" :aria-label="$t('app.language')" class="inline-flex rounded-md border border-border-strong">
+    <div
+        role="group"
+        :aria-label="$t('app.language')"
+        class="inline-flex rounded border border-border-strong bg-surface-raised shadow-xs"
+    >
         <button
             v-for="(label, code) in locales"
             :key="code"
             type="button"
             :lang="code"
             :aria-pressed="page.props.locale === code"
-            class="min-h-11 px-3 text-sm first:rounded-l-md last:rounded-r-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            class="min-h-9 px-3 text-xs font-semibold first:rounded-l last:rounded-r transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary"
             :class="
-                page.props.locale === code ? 'bg-primary-soft font-semibold text-primary' : 'hover:bg-surface-sunken'
+                page.props.locale === code
+                    ? 'bg-primary text-on-primary'
+                    : 'text-ink-muted hover:bg-surface-sunken hover:text-ink'
             "
             @click="change(code)"
         >

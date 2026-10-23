@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class AcceptInvitation
 {
-    public function __construct(private AddMember $addMember) {}
+    public function __construct(
+        private AddMember $addMember,
+        private \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole,
+    ) {}
 
     public function handle(SchoolInvitation $invitation, User $user): void
     {
@@ -22,6 +25,8 @@ class AcceptInvitation
                     ->where('school_id', $invitation->school_id)
                     ->whereKey($invitation->teacher_id)
                     ->update(['user_id' => $user->id]);
+
+                $this->syncHomeroomRole->handle($invitation->school, $invitation->teacher_id);
             }
 
             $invitation->forceFill(['accepted_at' => now(), 'accepted_by' => $user->id])->save();

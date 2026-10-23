@@ -37,22 +37,40 @@ class ClassroomController extends Controller
         ]);
     }
 
-    public function store(ClassroomRequest $request): RedirectResponse
+    public function store(ClassroomRequest $request, \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
     {
-        Classroom::create($request->validated());
+        $classroom = Classroom::create($request->validated());
+        if ($classroom->homeroom_teacher_id) {
+            $syncHomeroomRole->handle($classroom->school, $classroom->homeroom_teacher_id);
+        }
 
         return back()->with('success', __('academic.saved'));
     }
 
-    public function update(ClassroomRequest $request, Classroom $classroom): RedirectResponse
+    public function update(ClassroomRequest $request, Classroom $classroom, \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
     {
+        $oldTeacherId = $classroom->homeroom_teacher_id;
         $classroom->update($request->validated());
+        $newTeacherId = $classroom->homeroom_teacher_id;
+
+        if ($oldTeacherId !== $newTeacherId) {
+            $syncHomeroomRole->handle($classroom->school, $oldTeacherId);
+            $syncHomeroomRole->handle($classroom->school, $newTeacherId);
+        }
 
         return back()->with('success', __('academic.saved'));
     }
 
-    public function destroy(Classroom $classroom): RedirectResponse
+    public function destroy(Classroom $classroom, \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
     {
-        return $this->destroyUnlessUsed($classroom);
+        $teacherId = $classroom->homeroom_teacher_id;
+        $school = $classroom->school;
+        $response = $this->destroyUnlessUsed($classroom);
+
+        if ($teacherId && ! Classroom::where('id', $classroom->id)->exists()) {
+            $syncHomeroomRole->handle($school, $teacherId);
+        }
+
+        return $response;
     }
 }

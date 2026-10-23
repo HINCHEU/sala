@@ -6,13 +6,15 @@ const page = usePage();
 </script>
 
 <template>
-    <div class="flex min-w-0 items-center gap-2">
+    <div class="flex min-w-0 items-center gap-2.5">
         <img
             v-if="page.props.school?.logo_url"
             :src="page.props.school.logo_url"
             alt=""
-            class="size-9 shrink-0 rounded-md object-contain"
+            class="size-8 shrink-0 rounded border border-border object-contain"
         />
-        <span class="truncate font-bold">{{ page.props.school?.name ?? $t('app.name') }}</span>
+        <span class="truncate font-headline font-bold tracking-tight text-ink">{{
+            page.props.school?.name ?? $t('app.name')
+        }}</span>
     </div>
 </template>

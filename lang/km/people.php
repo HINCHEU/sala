@@ -16,6 +16,7 @@ return [
     'search_hint' => 'ឈ្មោះ អត្តលេខ ឬលេខទូរស័ព្ទអាណាព្យាបាល',
     'no_match' => 'រកមិនឃើញ',
     'count' => 'សិស្សសរុប :count នាក់',
+    'female_split' => 'ស្រី: :count',
 
     // Student
     'add_student' => 'បន្ថែមសិស្ស',

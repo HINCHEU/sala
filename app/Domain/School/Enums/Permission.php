@@ -12,4 +12,5 @@ enum Permission: string
     case ManageMembers = 'school.manage-members';
     case ManageAcademic = 'academic.manage';
     case ManagePeople = 'people.manage';
+    case ManageExams = 'exams.manage';
 }

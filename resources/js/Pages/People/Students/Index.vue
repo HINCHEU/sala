@@ -75,7 +75,7 @@ const apply = () =>
                 :text="filters.q ? '' : $t('people.no_students_text')"
             />
 
-            <section v-else class="rounded-md border border-border bg-surface-raised shadow-sm">
+            <section v-else class="rounded-lg border border-border bg-surface-raised shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <caption class="sr-only">
@@ -83,32 +83,38 @@ const apply = () =>
                                 $t('people.tabs.students')
                             }}
                         </caption>
-                        <thead class="bg-surface-sunken text-left">
+                        <thead
+                            class="border-b border-border bg-surface-sunken text-left text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                        >
                             <tr>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.student_code') }}</th>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.name') }}</th>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.gender') }}</th>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.classroom') }}</th>
-                                <th scope="col" class="px-3 py-2 font-medium">{{ $t('people.guardian_phone') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.student_code') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.name') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.gender') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.classroom') }}</th>
+                                <th scope="col" class="px-3.5 py-2.5">{{ $t('people.guardian_phone') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border">
-                            <tr v-for="s in students.data" :key="s.id" class="hover:bg-surface-sunken">
-                                <td class="px-3 py-2 font-mono text-[13px] tabular-nums">{{ s.student_code }}</td>
-                                <td class="px-3 py-2">
+                            <tr v-for="s in students.data" :key="s.id" class="transition-colors hover:bg-slate-50/70">
+                                <td class="px-3.5 py-2.5 font-mono text-xs font-medium tabular-nums text-primary">
+                                    {{ s.student_code }}
+                                </td>
+                                <td class="px-3.5 py-2.5">
                                     <Link
                                         :href="`/people/students/${s.id}`"
-                                        class="font-semibold text-primary hover:underline"
+                                        class="font-semibold text-ink hover:text-primary hover:underline"
                                     >
                                         {{ s.name_km }}
                                     </Link>
-                                    <span v-if="s.name_en" lang="en" class="block text-[13px] text-ink-muted">{{
+                                    <span v-if="s.name_en" lang="en" class="block text-xs text-ink-muted">{{
                                         s.name_en
                                     }}</span>
                                 </td>
-                                <td class="px-3 py-2">{{ $t(`people.genders.${s.gender}`) }}</td>
-                                <td class="px-3 py-2">{{ s.classroom ?? '—' }}</td>
-                                <td class="px-3 py-2 tabular-nums">{{ s.guardian_phone ?? '—' }}</td>
+                                <td class="px-3.5 py-2.5">{{ $t(`people.genders.${s.gender}`) }}</td>
+                                <td class="px-3.5 py-2.5">{{ s.classroom ?? '—' }}</td>
+                                <td class="px-3.5 py-2.5 font-mono text-xs tabular-nums text-ink-muted">
+                                    {{ s.guardian_phone ?? '—' }}
+                                </td>
                             </tr>
                         </tbody>
                     </table>

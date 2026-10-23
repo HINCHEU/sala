@@ -69,28 +69,31 @@ function display(row, column) {
 </script>
 
 <template>
-    <section class="rounded-md border border-border bg-surface-raised shadow-sm" :aria-label="title">
-        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
-            <h2 class="text-lg leading-[30px] font-semibold">{{ title }}</h2>
-            <SButton variant="ghost" :disabled="editing !== null" @click="open(null)">
-                <Plus :size="20" :stroke-width="1.75" aria-hidden="true" />
+    <section class="rounded-lg border border-border bg-surface-raised shadow-sm" :aria-label="title">
+        <header
+            class="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-sunken/30 px-4 py-3"
+        >
+            <h2 class="font-headline text-base leading-6 font-bold text-ink">{{ title }}</h2>
+            <SButton variant="ghost" size="compact" :disabled="editing !== null" @click="open(null)">
+                <Plus :size="16" :stroke-width="2" aria-hidden="true" />
                 {{ $t('academic.add') }}
             </SButton>
         </header>
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-surface-sunken text-left">
+                <thead class="border-b border-border bg-surface-sunken text-left">
                     <tr>
                         <th
                             v-for="column in columns"
                             :key="column.key"
                             scope="col"
-                            class="px-3 py-2 text-[13px] leading-[22px] font-medium whitespace-nowrap"
+                            class="px-3.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-ink-muted whitespace-nowrap"
+                            :class="column.type === 'number' && 'text-right'"
                         >
                             {{ column.label }}
                         </th>
-                        <th scope="col" class="px-3 py-2">
+                        <th scope="col" class="px-3.5 py-2.5 text-right">
                             <span class="sr-only">{{ $t('academic.actions') }}</span>
                         </th>
                     </tr>
@@ -141,8 +144,14 @@ function display(row, column) {
                                 </div>
                             </td>
                         </tr>
-                        <tr v-else>
-                            <td v-for="column in columns" :key="column.key" class="px-3 py-2">
+
+                        <tr v-else class="transition-colors hover:bg-slate-50/70">
+                            <td
+                                v-for="column in columns"
+                                :key="column.key"
+                                class="px-3.5 py-2.5"
+                                :class="column.type === 'number' && 'font-mono text-right tabular-nums'"
+                            >
                                 {{ display(row, column) }}
                             </td>
                             <td class="px-2 py-1 text-right whitespace-nowrap">

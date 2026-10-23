@@ -13,11 +13,11 @@ const active = (tab) => page.url.startsWith(href(tab));
             <li v-for="tab in tabs" :key="tab">
                 <Link
                     :href="href(tab)"
-                    class="-mb-px flex min-h-11 items-center border-b-2 px-3 text-sm whitespace-nowrap"
+                    class="-mb-px flex min-h-10 items-center border-b-2 px-3.5 text-sm font-medium whitespace-nowrap transition-colors"
                     :class="
                         active(tab)
                             ? 'border-primary font-semibold text-primary'
-                            : 'border-transparent text-ink-muted hover:text-ink'
+                            : 'border-transparent text-ink-muted hover:border-border-strong hover:text-ink'
                     "
                     :aria-current="active(tab) ? 'page' : undefined"
                 >

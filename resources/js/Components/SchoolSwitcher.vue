@@ -9,7 +9,12 @@ const change = (event) => router.post('/schools/switch', { school_id: event.targ
 <template>
     <div v-if="page.props.schools.length > 1">
         <label for="school-switcher" class="sr-only">{{ $t('app.switch_school') }}</label>
-        <select id="school-switcher" class="s-input max-w-56 text-sm" :value="page.props.school?.id" @change="change">
+        <select
+            id="school-switcher"
+            class="s-input w-full text-xs font-medium"
+            :value="page.props.school?.id"
+            @change="change"
+        >
             <option v-for="school in page.props.schools" :key="school.id" :value="school.id">{{ school.name }}</option>
         </select>
     </div>

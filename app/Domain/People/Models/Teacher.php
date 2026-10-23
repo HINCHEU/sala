@@ -58,4 +58,16 @@ class Teacher extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Domain\Teaching\Models\TeachingAssignment, $this> */
+    public function teachingAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Domain\Teaching\Models\TeachingAssignment::class);
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Domain\Academic\Models\Classroom, $this> */
+    public function homeroomClassrooms(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Domain\Academic\Models\Classroom::class, 'homeroom_teacher_id');
+    }
 }

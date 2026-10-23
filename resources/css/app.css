@@ -1,7 +1,14 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
-/* Self-hosted Khmer fonts: interface (Kantumruy Pro, Noto Sans Khmer fallback) and documents. */
+/* Structural Latin, Tabular Numerics, and Khmer fonts */
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
 @import '@fontsource/kantumruy-pro/400.css';
 @import '@fontsource/kantumruy-pro/500.css';
 @import '@fontsource/kantumruy-pro/600.css';
@@ -30,21 +37,30 @@
     --color-ink: var(--ink);
     --color-ink-muted: var(--ink-muted);
     --color-primary: var(--primary);
+    --color-primary-dark: var(--primary-dark);
     --color-on-primary: var(--on-primary);
     --color-primary-soft: var(--primary-soft);
+    --color-primary-container: var(--primary-container);
+    --color-on-primary-container: var(--on-primary-container);
     --color-gold: var(--gold);
     --color-on-gold: var(--on-gold);
+    --color-gold-soft: var(--gold-soft);
     --color-success: var(--success);
     --color-success-soft: var(--success-soft);
     --color-warning: var(--warning);
     --color-warning-soft: var(--warning-soft);
     --color-danger: var(--danger);
     --color-danger-soft: var(--danger-soft);
+    --color-info: var(--info);
+    --color-info-soft: var(--info-soft);
     --shadow-sm: var(--shadow-sm);
+    --shadow-md: var(--shadow-md);
     --shadow-lg: var(--shadow-lg);
+    --font-headline: var(--font-headline);
+    --font-khmer-body: var(--font-khmer-body);
 }
 
 body {
     @apply bg-surface text-ink font-sans;
-    line-height: 1.75;
+    line-height: 1.6;
 }

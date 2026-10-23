@@ -107,4 +107,14 @@ class User extends Authenticatable
     {
         return $this->two_factor_confirmed_at !== null;
     }
+
+    public function teacherProfile(): ?\App\Domain\People\Models\Teacher
+    {
+        return \App\Domain\People\Models\Teacher::where('user_id', $this->id)->first();
+    }
+
+    public function isTeacher(): bool
+    {
+        return collect($this->schoolRoles())->contains(fn (Role $role) => $role->isTeacher());
+    }
 }

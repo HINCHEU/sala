@@ -16,6 +16,7 @@ return [
     'search_hint' => 'Name, student code or guardian phone',
     'no_match' => 'Nothing found',
     'count' => ':count students',
+    'female_split' => 'F: :count',
 
     // Student
     'add_student' => 'Add student',

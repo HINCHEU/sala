@@ -9,10 +9,12 @@ use App\Http\Controllers\Academic\GradingScaleController;
 use App\Http\Controllers\Academic\RoomController;
 use App\Http\Controllers\Academic\StructureController;
 use App\Http\Controllers\Academic\SubjectController;
+use App\Http\Controllers\Academic\TeachingAssignmentController;
 use App\Http\Controllers\Academic\TrackController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\People\EnrollmentController;
 use App\Http\Controllers\People\GuardianController;
@@ -79,6 +81,11 @@ Route::middleware('auth')->group(function () {
 
                 Route::get('/grading', [GradingScaleController::class, 'index'])->name('grading.index');
                 Route::put('/grading/{stage}', [GradingScaleController::class, 'update'])->name('grading.update');
+
+                Route::get('/teaching', [TeachingAssignmentController::class, 'index'])->name('teaching.index');
+                Route::put('/teaching/classrooms/{classroom}', [TeachingAssignmentController::class, 'update'])->name('teaching.update');
+                Route::post('/teaching/copy', [TeachingAssignmentController::class, 'copy'])->name('teaching.copy');
+                Route::put('/teaching/approvals', [TeachingAssignmentController::class, 'updateApprovals'])->name('teaching.approvals');
             });
 
             Route::middleware('can:'.Permission::ManagePeople->value)->prefix('people')->name('people.')->group(function () {
@@ -111,6 +118,25 @@ Route::middleware('auth')->group(function () {
                 Route::get('/members', [MemberController::class, 'index'])->name('members.index');
                 Route::post('/members/invitations', [MemberController::class, 'invite'])->name('members.invite');
                 Route::post('/members/{member}/password', [MemberController::class, 'resetPassword'])->name('members.password');
+            });
+
+            Route::prefix('exams')->name('exams.')->group(function () {
+                Route::get('/', [ExamController::class, 'index'])->name('index');
+                Route::get('/{exam}', [ExamController::class, 'show'])->name('show')->whereNumber('exam');
+
+                Route::middleware('can:'.Permission::ManageExams->value)->group(function () {
+                    Route::get('/create', [ExamController::class, 'create'])->name('create');
+                    Route::post('/', [ExamController::class, 'store'])->name('store');
+                    Route::get('/{exam}/edit', [ExamController::class, 'edit'])->name('edit')->whereNumber('exam');
+                    Route::put('/{exam}', [ExamController::class, 'update'])->name('update')->whereNumber('exam');
+                    Route::delete('/{exam}', [ExamController::class, 'destroy'])->name('destroy')->whereNumber('exam');
+                    Route::post('/{exam}/transition', [ExamController::class, 'transition'])->name('transition')->whereNumber('exam');
+                });
+
+                Route::post('/{exam}/subjects/{subjectStatus}/transition', [ExamController::class, 'transitionSubject'])
+                    ->name('subject.transition')
+                    ->whereNumber('exam')
+                    ->whereNumber('subjectStatus');
             });
         });
     });

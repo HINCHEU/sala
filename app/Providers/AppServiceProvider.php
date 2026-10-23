@@ -33,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('platform', fn (User $user) => $user->is_platform_admin);
 
+        Gate::policy(\App\Domain\Exams\Models\Exam::class, \App\Domain\Exams\Policies\ExamPolicy::class);
+
         // Platform admins have support access to every school.
         Gate::before(fn (User $user) => $user->is_platform_admin ? true : null);
     }
