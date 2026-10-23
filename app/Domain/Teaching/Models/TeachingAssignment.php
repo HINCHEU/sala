@@ -10,6 +10,19 @@ use App\Support\Tenancy\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $school_id
+ * @property int $academic_year_id
+ * @property int $classroom_id
+ * @property int $subject_id
+ * @property int $teacher_id
+ * @property ?int $hours_per_week
+ * @property-read ?AcademicYear $academicYear
+ * @property-read ?Classroom $classroom
+ * @property-read ?Subject $subject
+ * @property-read ?Teacher $teacher
+ */
 class TeachingAssignment extends Model
 {
     use BelongsToSchool;
@@ -29,21 +42,25 @@ class TeachingAssignment extends Model
         ];
     }
 
+    /** @return BelongsTo<AcademicYear, $this> */
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);
     }
 
+    /** @return BelongsTo<Classroom, $this> */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class);
     }
 
+    /** @return BelongsTo<Subject, $this> */
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
     }
 
+    /** @return BelongsTo<Teacher, $this> */
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);

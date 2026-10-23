@@ -52,13 +52,14 @@ watch(
     },
 );
 
-const maxWidthClass = {
-    sm: 'sm:max-w-sm',
-    md: 'sm:max-w-md',
-    lg: 'sm:max-w-lg',
-    xl: 'sm:max-w-xl',
-    '2xl': 'sm:max-w-2xl',
-}[props.maxWidth] ?? 'sm:max-w-md';
+const maxWidthClass =
+    {
+        sm: 'sm:max-w-sm',
+        md: 'sm:max-w-md',
+        lg: 'sm:max-w-lg',
+        xl: 'sm:max-w-xl',
+        '2xl': 'sm:max-w-2xl',
+    }[props.maxWidth] ?? 'sm:max-w-md';
 </script>
 
 <template>
@@ -71,10 +72,7 @@ const maxWidthClass = {
             leave-from-class="opacity-100"
             leave-to-class="opacity-0"
         >
-            <div
-                v-if="show"
-                class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
-            >
+            <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0">
                 <!-- Backdrop -->
                 <div
                     class="fixed inset-0 bg-[#0a0d11]/50 backdrop-blur-xs transition-opacity"
@@ -101,10 +99,7 @@ const maxWidthClass = {
                         aria-modal="true"
                     >
                         <!-- Header (if title provided) -->
-                        <div
-                            v-if="title"
-                            class="flex items-center justify-between border-b border-border px-6 py-4"
-                        >
+                        <div v-if="title" class="flex items-center justify-between border-b border-border px-6 py-4">
                             <h3 class="text-base font-bold text-ink">
                                 {{ title }}
                             </h3>

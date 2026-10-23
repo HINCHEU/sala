@@ -2,16 +2,13 @@
 import { computed, ref } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import {
-    AlertCircle,
     ArrowLeft,
     Award,
-    Calendar,
     Check,
     CheckCircle2,
     Clock,
     CornerDownLeft,
     Edit3,
-    FileSpreadsheet,
     Lock,
     Send,
     ShieldAlert,
@@ -67,7 +64,6 @@ const totalSubjects = computed(() => props.subjectStatuses.length);
 const approvedSubjects = computed(() => props.subjectStatuses.filter((s) => s.status === 'approved').length);
 const submittedSubjects = computed(() => props.subjectStatuses.filter((s) => s.status === 'submitted').length);
 const returnedSubjects = computed(() => props.subjectStatuses.filter((s) => s.status === 'returned').length);
-const draftSubjects = computed(() => props.subjectStatuses.filter((s) => s.status === 'draft').length);
 
 // Teacher assignment lookup: (classroom_id, subject_id) -> teacher
 const assignmentMap = computed(() => {
@@ -194,9 +190,7 @@ const submitReturn = () => {
                     <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-ink-muted sm:text-sm">
                         <span class="rounded bg-surface-sunken px-2 py-0.5 font-medium text-ink">
                             {{ $t(`exams.types.${exam.type}`) }}
-                            <template v-if="exam.month">
-                                ({{ $t(`exams.months.${exam.month}`) }})
-                            </template>
+                            <template v-if="exam.month"> ({{ $t(`exams.months.${exam.month}`) }}) </template>
                         </span>
                         <span>•</span>
                         <span>{{ exam.academic_year?.name }}</span>
@@ -236,12 +230,7 @@ const submitReturn = () => {
                                 <Check v-if="idx < currentStageIndex" class="size-3" />
                                 <span>{{ $t(`exams.statuses.${stage}`) }}</span>
                             </div>
-                            <span
-                                v-if="idx < lifecycleStages.length - 1"
-                                class="text-xs text-border-strong"
-                            >
-                                →
-                            </span>
+                            <span v-if="idx < lifecycleStages.length - 1" class="text-xs text-border-strong"> → </span>
                         </template>
                     </div>
 
@@ -331,21 +320,13 @@ const submitReturn = () => {
 
         <!-- Metric KPI Cards -->
         <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <MetricKpiCard
-                :title="$t('academic.subject')"
-                :total="totalSubjects"
-                :icon="Award"
-            />
+            <MetricKpiCard :title="$t('academic.subject')" :total="totalSubjects" :icon="Award" />
             <MetricKpiCard
                 :title="$t('exams.subject_statuses.approved')"
                 :total="approvedSubjects"
                 :icon="CheckCircle2"
             />
-            <MetricKpiCard
-                :title="$t('exams.subject_statuses.submitted')"
-                :total="submittedSubjects"
-                :icon="Send"
-            />
+            <MetricKpiCard :title="$t('exams.subject_statuses.submitted')" :total="submittedSubjects" :icon="Send" />
             <MetricKpiCard
                 :title="$t('exams.subject_statuses.returned')"
                 :total="returnedSubjects"
@@ -401,7 +382,9 @@ const submitReturn = () => {
             <!-- Table -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
-                    <thead class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                    <thead
+                        class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                    >
                         <tr>
                             <th class="px-4 py-3">{{ $t('academic.classroom_name') }}</th>
                             <th class="px-4 py-3">{{ $t('academic.subject') }}</th>
@@ -412,10 +395,7 @@ const submitReturn = () => {
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
-                        <tr
-                            v-if="filteredStatuses.length === 0"
-                            class="text-center text-ink-muted"
-                        >
+                        <tr v-if="filteredStatuses.length === 0" class="text-center text-ink-muted">
                             <td colspan="6" class="p-8 text-sm">
                                 {{ $t('academic.empty') }}
                             </td>
@@ -431,7 +411,11 @@ const submitReturn = () => {
                                 <div>{{ classroomMap.get(status.classroom_id)?.name }}</div>
                                 <div class="text-xs text-ink-muted">
                                     {{ classroomGrade(classroomMap.get(status.classroom_id)) }}
-                                    • {{ classroomMap.get(status.classroom_id)?.homeroom_teacher?.name_km || $t('academic.unassigned') }}
+                                    •
+                                    {{
+                                        classroomMap.get(status.classroom_id)?.homeroom_teacher?.name_km ||
+                                        $t('academic.unassigned')
+                                    }}
                                 </div>
                             </td>
 
@@ -447,7 +431,10 @@ const submitReturn = () => {
 
                             <!-- Teacher -->
                             <td class="px-4 py-3 whitespace-nowrap text-xs text-ink">
-                                {{ getAssignedTeacher(status.classroom_id, status.subject_id)?.teacher_name || $t('academic.unassigned') }}
+                                {{
+                                    getAssignedTeacher(status.classroom_id, status.subject_id)?.teacher_name ||
+                                    $t('academic.unassigned')
+                                }}
                             </td>
 
                             <!-- Status Pill -->
@@ -461,18 +448,26 @@ const submitReturn = () => {
                             <!-- Audit info / Returned reason note -->
                             <td class="px-4 py-3 text-xs text-ink-muted">
                                 <div v-if="status.status === 'submitted' && status.submitted_by">
-                                    {{ $t('exams.submitted_by', { name: status.submitted_by, date: status.submitted_at }) }}
+                                    {{
+                                        $t('exams.submitted_by', {
+                                            name: status.submitted_by,
+                                            date: status.submitted_at,
+                                        })
+                                    }}
                                 </div>
                                 <div v-else-if="status.status === 'approved' && status.approved_by">
-                                    {{ $t('exams.approved_by', { name: status.approved_by, date: status.approved_at }) }}
+                                    {{
+                                        $t('exams.approved_by', { name: status.approved_by, date: status.approved_at })
+                                    }}
                                 </div>
-                                <div v-else-if="status.status === 'returned' && status.returned_reason" class="text-danger">
+                                <div
+                                    v-else-if="status.status === 'returned' && status.returned_reason"
+                                    class="text-danger"
+                                >
                                     <span class="font-semibold">{{ $t('exams.return_reason') }}:</span>
                                     "{{ status.returned_reason }}"
                                 </div>
-                                <div v-else class="text-ink-muted italic">
-                                    —
-                                </div>
+                                <div v-else class="text-ink-muted italic">—</div>
                             </td>
 
                             <!-- Actions -->
@@ -553,18 +548,10 @@ const submitReturn = () => {
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3">
-                    <button
-                        type="button"
-                        class="s-btn"
-                        @click="showReturnModal = false"
-                    >
+                    <button type="button" class="s-btn" @click="showReturnModal = false">
                         {{ $t('app.cancel') }}
                     </button>
-                    <button
-                        type="button"
-                        class="s-btn s-btn-danger"
-                        @click="submitReturn"
-                    >
+                    <button type="button" class="s-btn s-btn-danger" @click="submitReturn">
                         {{ $t('exams.actions.return_subject') }}
                     </button>
                 </div>

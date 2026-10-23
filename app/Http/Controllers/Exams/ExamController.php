@@ -15,7 +15,9 @@ use App\Domain\Exams\Enums\ExamType;
 use App\Domain\Exams\Enums\SubjectExamStatus;
 use App\Domain\Exams\Models\Exam;
 use App\Domain\Exams\Models\ExamSubjectStatus;
+use App\Domain\Exams\Policies\ExamPolicy;
 use App\Domain\School\Enums\Permission;
+use App\Domain\Teaching\Models\TeachingAssignment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Exams\ExamRequest;
 use App\Support\Tenancy\CurrentSchool;
@@ -158,7 +160,7 @@ class ExamController extends Controller
                     'name_km' => $c->homeroomTeacher->name_km,
                     'name_en' => $c->homeroomTeacher->name_en,
                 ] : null,
-                'teaching_assignments' => $c->teachingAssignments->map(fn ($ta) => [
+                'teaching_assignments' => $c->teachingAssignments->map(fn (TeachingAssignment $ta) => [
                     'subject_id' => $ta->subject_id,
                     'teacher_id' => $ta->teacher_id,
                     'teacher_name' => $ta->teacher?->name_km,
@@ -169,12 +171,12 @@ class ExamController extends Controller
                 'exam_id' => $ss->exam_id,
                 'classroom_id' => $ss->classroom_id,
                 'subject_id' => $ss->subject_id,
-                'subject' => [
+                'subject' => $ss->subject ? [
                     'id' => $ss->subject->id,
                     'code' => $ss->subject->code,
                     'name_km' => $ss->subject->name_km,
                     'name_en' => $ss->subject->name_en,
-                ],
+                ] : null,
                 'status' => $ss->status->value,
                 'submitted_by' => $ss->submittedBy?->name,
                 'submitted_at' => $ss->submitted_at?->format('Y-m-d H:i'),
@@ -264,7 +266,7 @@ class ExamController extends Controller
         if (in_array($target, [SubjectExamStatus::Approved, SubjectExamStatus::Returned], true)) {
             $classroom = $subjectStatus->classroom;
             $canApprove = $request->user()->can(Permission::ManageExams->value)
-                || app(\App\Domain\Exams\Policies\ExamPolicy::class)->approveSubjectScores($request->user(), $exam, $classroom);
+                || ($classroom !== null && app(ExamPolicy::class)->approveSubjectScores($request->user(), $exam, $classroom));
 
             abort_unless($canApprove, 403, __('exams.errors.not_authorized_to_approve'));
         }

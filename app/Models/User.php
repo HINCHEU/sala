@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\People\Models\Teacher;
 use App\Domain\School\Enums\MembershipStatus;
 use App\Domain\School\Enums\Role;
 use App\Domain\School\Models\Membership;
@@ -108,9 +109,9 @@ class User extends Authenticatable
         return $this->two_factor_confirmed_at !== null;
     }
 
-    public function teacherProfile(): ?\App\Domain\People\Models\Teacher
+    public function teacherProfile(): ?Teacher
     {
-        return \App\Domain\People\Models\Teacher::where('user_id', $this->id)->first();
+        return Teacher::where('user_id', $this->id)->first();
     }
 
     public function isTeacher(): bool

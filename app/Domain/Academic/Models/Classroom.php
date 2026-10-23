@@ -3,14 +3,40 @@
 namespace App\Domain\Academic\Models;
 
 use App\Domain\Academic\Enums\Shift;
+use App\Domain\Exams\Models\Exam;
+use App\Domain\Exams\Models\ExamSubjectStatus;
 use App\Domain\People\Models\Enrollment;
 use App\Domain\People\Models\Teacher;
+use App\Domain\Teaching\Models\TeachingAssignment;
 use App\Support\Tenancy\BelongsToSchool;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** "7A" is a new row every year, with its own students and homeroom teacher. */
+/**
+ * "7A" is a new row every year, with its own students and homeroom teacher.
+ *
+ * @property int $id
+ * @property int $school_id
+ * @property int $academic_year_id
+ * @property int $grade_level_id
+ * @property ?int $track_id
+ * @property ?int $room_id
+ * @property ?int $homeroom_teacher_id
+ * @property string $name
+ * @property Shift $shift
+ * @property ?int $capacity
+ * @property-read ?GradeLevel $gradeLevel
+ * @property-read ?Teacher $homeroomTeacher
+ * @property-read ?Track $track
+ * @property-read ?Room $room
+ * @property-read Collection<int, Enrollment> $enrollments
+ * @property-read Collection<int, TeachingAssignment> $teachingAssignments
+ * @property-read Collection<int, Exam> $exams
+ * @property-read Collection<int, ExamSubjectStatus> $examSubjectStatuses
+ */
 class Classroom extends Model
 {
     use BelongsToSchool;
@@ -52,21 +78,21 @@ class Classroom extends Model
         return $this->hasMany(Enrollment::class);
     }
 
-    /** @return HasMany<\App\Domain\Teaching\Models\TeachingAssignment, $this> */
+    /** @return HasMany<TeachingAssignment, $this> */
     public function teachingAssignments(): HasMany
     {
-        return $this->hasMany(\App\Domain\Teaching\Models\TeachingAssignment::class);
+        return $this->hasMany(TeachingAssignment::class);
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Domain\Exams\Models\Exam, $this> */
-    public function exams(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    /** @return BelongsToMany<Exam, $this> */
+    public function exams(): BelongsToMany
     {
-        return $this->belongsToMany(\App\Domain\Exams\Models\Exam::class, 'exam_classrooms')->withTimestamps();
+        return $this->belongsToMany(Exam::class, 'exam_classrooms')->withTimestamps();
     }
 
-    /** @return HasMany<\App\Domain\Exams\Models\ExamSubjectStatus, $this> */
+    /** @return HasMany<ExamSubjectStatus, $this> */
     public function examSubjectStatuses(): HasMany
     {
-        return $this->hasMany(\App\Domain\Exams\Models\ExamSubjectStatus::class);
+        return $this->hasMany(ExamSubjectStatus::class);
     }
 }

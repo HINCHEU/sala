@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exams\Actions;
 
-use App\Domain\Academic\Models\Classroom;
 use App\Domain\Academic\Models\CurriculumSubject;
 use App\Domain\Exams\Enums\ExamStatus;
 use App\Domain\Exams\Enums\SubjectExamStatus;

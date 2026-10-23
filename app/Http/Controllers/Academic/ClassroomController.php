@@ -10,6 +10,7 @@ use App\Domain\Academic\Models\Room;
 use App\Domain\Academic\Models\Track;
 use App\Domain\People\Enums\TeacherStatus;
 use App\Domain\People\Models\Teacher;
+use App\Domain\Teaching\Actions\SyncHomeroomTeacherRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Academic\ClassroomRequest;
 use Illuminate\Http\RedirectResponse;
@@ -37,7 +38,7 @@ class ClassroomController extends Controller
         ]);
     }
 
-    public function store(ClassroomRequest $request, \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
+    public function store(ClassroomRequest $request, SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
     {
         $classroom = Classroom::create($request->validated());
         if ($classroom->homeroom_teacher_id) {
@@ -47,7 +48,7 @@ class ClassroomController extends Controller
         return back()->with('success', __('academic.saved'));
     }
 
-    public function update(ClassroomRequest $request, Classroom $classroom, \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
+    public function update(ClassroomRequest $request, Classroom $classroom, SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
     {
         $oldTeacherId = $classroom->homeroom_teacher_id;
         $classroom->update($request->validated());
@@ -61,7 +62,7 @@ class ClassroomController extends Controller
         return back()->with('success', __('academic.saved'));
     }
 
-    public function destroy(Classroom $classroom, \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
+    public function destroy(Classroom $classroom, SyncHomeroomTeacherRole $syncHomeroomRole): RedirectResponse
     {
         $teacherId = $classroom->homeroom_teacher_id;
         $school = $classroom->school;

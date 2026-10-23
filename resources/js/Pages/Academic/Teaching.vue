@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
-import { Award, BookOpen, Check, Copy, GraduationCap, Save, Users } from 'lucide-vue-next';
+import { Copy, GraduationCap, Save } from 'lucide-vue-next';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import AcademicTabs from '@/Components/AcademicTabs.vue';
 import EmptyState from '@/Components/EmptyState.vue';
@@ -22,7 +22,7 @@ const props = defineProps({
 });
 
 const page = usePage();
-const name = (row) => (page.props.locale === 'en' ? (row.name_en || row.name_km) : (row.name_km || row.name_en));
+const name = (row) => (page.props.locale === 'en' ? row.name_en || row.name_km : row.name_km || row.name_en);
 
 // Year switching
 const onYearChange = (event) => {
@@ -99,7 +99,7 @@ const initApprovalsForm = () => {
             grade_level_id: grade.id,
             approver_type: found ? found.approver_type : 'homeroom',
             role: found ? found.role : 'academic_office',
-            user_id: found ? found.user_id : (props.staffUsers[0]?.id || null),
+            user_id: found ? found.user_id : props.staffUsers[0]?.id || null,
         };
     });
 };
@@ -125,9 +125,7 @@ const teacherCanTeach = (teacher, subjectId) => {
 
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <label for="year-select" class="text-sm font-medium text-ink-muted">
-                    {{ $t('academic.year') }}:
-                </label>
+                <label for="year-select" class="text-sm font-medium text-ink-muted"> {{ $t('academic.year') }}: </label>
                 <select
                     id="year-select"
                     :value="yearId"
@@ -135,7 +133,7 @@ const teacherCanTeach = (teacher, subjectId) => {
                     @change="onYearChange"
                 >
                     <option v-for="y in years" :key="y.id" :value="y.id">
-                        {{ y.name }} {{ y.is_current ? `(${ $t('academic.current') })` : '' }}
+                        {{ y.name }} {{ y.is_current ? `(${$t('academic.current')})` : '' }}
                     </option>
                 </select>
             </div>
@@ -152,11 +150,7 @@ const teacherCanTeach = (teacher, subjectId) => {
         </div>
 
         <div v-if="classrooms.length === 0" class="rounded-lg border border-border bg-surface-raised p-8">
-            <EmptyState
-                :icon="GraduationCap"
-                :title="$t('academic.empty')"
-                :text="$t('academic.no_year')"
-            />
+            <EmptyState :icon="GraduationCap" :title="$t('academic.empty')" :text="$t('academic.no_year')" />
         </div>
 
         <div v-else class="space-y-8">
@@ -205,7 +199,11 @@ const teacherCanTeach = (teacher, subjectId) => {
                                 </span>
                                 • {{ $t('academic.homeroom_teacher') }}:
                                 <span class="font-medium text-ink">
-                                    {{ selectedClassroom.homeroomTeacher ? selectedClassroom.homeroomTeacher.name_km : $t('academic.unassigned') }}
+                                    {{
+                                        selectedClassroom.homeroomTeacher
+                                            ? selectedClassroom.homeroomTeacher.name_km
+                                            : $t('academic.unassigned')
+                                    }}
                                 </span>
                             </p>
                         </div>
@@ -229,7 +227,9 @@ const teacherCanTeach = (teacher, subjectId) => {
                 <!-- Assignment Matrix Table -->
                 <div v-if="selectedClassroom" class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <thead class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                        <thead
+                            class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                        >
                             <tr>
                                 <th class="w-16 px-4 py-3">{{ $t('academic.code') }}</th>
                                 <th class="px-4 py-3">{{ $t('academic.subject') }}</th>
@@ -251,9 +251,7 @@ const teacherCanTeach = (teacher, subjectId) => {
                                     {{ name(sub) }}
                                 </td>
                                 <td class="px-4 py-3 text-xs text-ink-muted">
-                                    <span v-if="sub.coefficient" class="font-mono">
-                                        ×{{ sub.coefficient }}
-                                    </span>
+                                    <span v-if="sub.coefficient" class="font-mono"> ×{{ sub.coefficient }} </span>
                                     <span v-else>—</span>
                                 </td>
                                 <td class="px-4 py-3">
@@ -263,11 +261,7 @@ const teacherCanTeach = (teacher, subjectId) => {
                                         class="w-full rounded-sm border border-border bg-surface-raised px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:ring-1 focus:ring-primary"
                                     >
                                         <option :value="null">-- {{ $t('academic.unassigned') }} --</option>
-                                        <option
-                                            v-for="t in teachers"
-                                            :key="t.id"
-                                            :value="t.id"
-                                        >
+                                        <option v-for="t in teachers" :key="t.id" :value="t.id">
                                             {{ t.name_km }} {{ t.staff_code ? `(${t.staff_code})` : '' }}
                                             {{ teacherCanTeach(t, sub.id) ? '★' : '' }}
                                         </option>
@@ -331,7 +325,9 @@ const teacherCanTeach = (teacher, subjectId) => {
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <thead class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                        <thead
+                            class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                        >
                             <tr>
                                 <th class="w-48 px-4 py-3">{{ $t('academic.grade') }}</th>
                                 <th class="w-64 px-4 py-3">{{ $t('academic.approver') }}</th>
@@ -361,29 +357,37 @@ const teacherCanTeach = (teacher, subjectId) => {
                                 <td class="px-4 py-3">
                                     <div v-if="approvalsForm.approvals[idx]">
                                         <!-- If role -->
-                                        <div v-if="approvalsForm.approvals[idx].approver_type === 'role'" class="flex items-center gap-2">
-                                            <span class="text-xs text-ink-muted">{{ $t('academic.designated_role') }}:</span>
+                                        <div
+                                            v-if="approvalsForm.approvals[idx].approver_type === 'role'"
+                                            class="flex items-center gap-2"
+                                        >
+                                            <span class="text-xs text-ink-muted"
+                                                >{{ $t('academic.designated_role') }}:</span
+                                            >
                                             <select
                                                 v-model="approvalsForm.approvals[idx].role"
                                                 class="rounded-sm border border-border bg-surface-raised px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:ring-1 focus:ring-primary"
                                             >
-                                                <option value="academic_office">{{ $t('roles.academic_office') }}</option>
+                                                <option value="academic_office">
+                                                    {{ $t('roles.academic_office') }}
+                                                </option>
                                                 <option value="director">{{ $t('roles.director') }}</option>
                                             </select>
                                         </div>
 
                                         <!-- If specific user -->
-                                        <div v-else-if="approvalsForm.approvals[idx].approver_type === 'user'" class="flex items-center gap-2">
-                                            <span class="text-xs text-ink-muted">{{ $t('academic.designated_user') }}:</span>
+                                        <div
+                                            v-else-if="approvalsForm.approvals[idx].approver_type === 'user'"
+                                            class="flex items-center gap-2"
+                                        >
+                                            <span class="text-xs text-ink-muted"
+                                                >{{ $t('academic.designated_user') }}:</span
+                                            >
                                             <select
                                                 v-model="approvalsForm.approvals[idx].user_id"
                                                 class="rounded-sm border border-border bg-surface-raised px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:ring-1 focus:ring-primary"
                                             >
-                                                <option
-                                                    v-for="u in staffUsers"
-                                                    :key="u.id"
-                                                    :value="u.id"
-                                                >
+                                                <option v-for="u in staffUsers" :key="u.id" :value="u.id">
                                                     {{ u.name }} ({{ u.email }})
                                                 </option>
                                             </select>

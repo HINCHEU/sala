@@ -10,6 +10,18 @@ use App\Support\Tenancy\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $school_id
+ * @property int $academic_year_id
+ * @property ?int $grade_level_id
+ * @property ApproverType $approver_type
+ * @property ?string $role
+ * @property ?int $user_id
+ * @property-read ?AcademicYear $academicYear
+ * @property-read ?GradeLevel $gradeLevel
+ * @property-read ?User $user
+ */
 class ApprovalAssignment extends Model
 {
     use BelongsToSchool;
@@ -29,16 +41,19 @@ class ApprovalAssignment extends Model
         ];
     }
 
+    /** @return BelongsTo<AcademicYear, $this> */
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);
     }
 
+    /** @return BelongsTo<GradeLevel, $this> */
     public function gradeLevel(): BelongsTo
     {
         return $this->belongsTo(GradeLevel::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

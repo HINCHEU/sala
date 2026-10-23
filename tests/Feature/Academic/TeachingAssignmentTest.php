@@ -1,6 +1,5 @@
 <?php
 
-use App\Domain\Academic\Actions\ApplyMoeysTemplate;
 use App\Domain\Academic\Actions\CreateAcademicYear;
 use App\Domain\Academic\Models\AcademicYear;
 use App\Domain\Academic\Models\Classroom;
@@ -11,7 +10,6 @@ use App\Domain\School\Enums\Role;
 use App\Domain\Teaching\Enums\ApproverType;
 use App\Domain\Teaching\Models\ApprovalAssignment;
 use App\Domain\Teaching\Models\TeachingAssignment;
-use App\Support\Tenancy\CurrentSchool;
 
 beforeEach(function () {
     $this->school = makeSchool();

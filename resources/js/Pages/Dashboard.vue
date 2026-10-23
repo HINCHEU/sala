@@ -5,15 +5,11 @@ import {
     Award,
     BookOpen,
     BookUser,
-    Calendar,
     ChevronRight,
     ClipboardList,
     Clock,
-    FileSpreadsheet,
     GraduationCap,
     School,
-    Send,
-    ShieldAlert,
     UserCheck,
     Users,
 } from 'lucide-vue-next';
@@ -33,10 +29,7 @@ const layout = useRoleLayout();
 
 const totalWeeklyHours = computed(() => {
     if (!props.teacherDashboard?.teaching_assignments) return 0;
-    return props.teacherDashboard.teaching_assignments.reduce(
-        (sum, a) => sum + (Number(a.hours_per_week) || 0),
-        0,
-    );
+    return props.teacherDashboard.teaching_assignments.reduce((sum, a) => sum + (Number(a.hours_per_week) || 0), 0);
 });
 </script>
 
@@ -68,7 +61,9 @@ const totalWeeklyHours = computed(() => {
                     </p>
                 </div>
 
-                <div class="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-3 py-1 text-xs font-semibold text-ink shadow-xs">
+                <div
+                    class="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-3 py-1 text-xs font-semibold text-ink shadow-xs"
+                >
                     <Clock class="size-3.5 text-primary" />
                     <span>
                         {{ $t('exams.weekly_hours', { hours: totalWeeklyHours }) }}
@@ -103,7 +98,9 @@ const totalWeeklyHours = computed(() => {
                             </span>
                         </div>
 
-                        <div class="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-ink-muted">
+                        <div
+                            class="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-ink-muted"
+                        >
                             <span class="font-mono font-medium text-ink">
                                 {{ $t('exams.students_enrolled', { count: c.student_count }) }}
                             </span>
@@ -161,7 +158,9 @@ const totalWeeklyHours = computed(() => {
                         </div>
 
                         <!-- Subjects list in this exam -->
-                        <div class="mt-4 divide-y divide-border/60 rounded border border-border/80 bg-surface-sunken/40">
+                        <div
+                            class="mt-4 divide-y divide-border/60 rounded border border-border/80 bg-surface-sunken/40"
+                        >
                             <div
                                 v-for="subj in exam.subjects"
                                 :key="subj.id"
@@ -182,10 +181,7 @@ const totalWeeklyHours = computed(() => {
                         </div>
 
                         <div class="mt-4 flex justify-end">
-                            <Link
-                                :href="`/exams/${exam.id}`"
-                                class="s-btn s-btn-compact s-btn-primary"
-                            >
+                            <Link :href="`/exams/${exam.id}`" class="s-btn s-btn-compact s-btn-primary">
                                 <Award class="size-3.5" />
                                 {{ $t('exams.actions.enter_scores') }}
                             </Link>
@@ -211,7 +207,9 @@ const totalWeeklyHours = computed(() => {
                 <div v-else class="overflow-hidden rounded-lg border border-border bg-surface-raised shadow-xs">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
-                            <thead class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                            <thead
+                                class="border-b border-border bg-surface-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-muted"
+                            >
                                 <tr>
                                     <th class="px-4 py-3">{{ $t('academic.tabs.classrooms') }}</th>
                                     <th class="px-4 py-3">{{ $t('academic.grade') }}</th>
@@ -233,7 +231,9 @@ const totalWeeklyHours = computed(() => {
                                         {{ a.grade }}
                                     </td>
                                     <td class="px-4 py-3 font-medium text-ink">
-                                        <span class="font-mono text-xs text-ink-muted mr-1.5">{{ a.subject_code }}</span>
+                                        <span class="font-mono text-xs text-ink-muted mr-1.5">{{
+                                            a.subject_code
+                                        }}</span>
                                         <span>{{ a.subject_name }}</span>
                                     </td>
                                     <td class="px-4 py-3 font-mono text-xs font-semibold text-ink">
@@ -284,11 +284,7 @@ const totalWeeklyHours = computed(() => {
                     :total="adminDashboard.students_count"
                     :icon="Users"
                 />
-                <MetricKpiCard
-                    :title="$t('exams.open_exams')"
-                    :total="adminDashboard.open_exams_count"
-                    :icon="Award"
-                />
+                <MetricKpiCard :title="$t('exams.open_exams')" :total="adminDashboard.open_exams_count" :icon="Award" />
             </div>
 
             <!-- Quick Action Management Cards -->
@@ -305,7 +301,9 @@ const totalWeeklyHours = computed(() => {
                         class="group rounded-lg border border-border bg-surface-raised p-5 shadow-xs transition-all hover:border-primary hover:shadow-sm"
                     >
                         <div class="flex items-center gap-3">
-                            <div class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <div
+                                class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
+                            >
                                 <BookOpen class="size-5" />
                             </div>
                             <div>
@@ -326,7 +324,9 @@ const totalWeeklyHours = computed(() => {
                         class="group rounded-lg border border-border bg-surface-raised p-5 shadow-xs transition-all hover:border-primary hover:shadow-sm"
                     >
                         <div class="flex items-center gap-3">
-                            <div class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <div
+                                class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
+                            >
                                 <Users class="size-5" />
                             </div>
                             <div>
@@ -347,7 +347,9 @@ const totalWeeklyHours = computed(() => {
                         class="group rounded-lg border border-border bg-surface-raised p-5 shadow-xs transition-all hover:border-primary hover:shadow-sm"
                     >
                         <div class="flex items-center gap-3">
-                            <div class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <div
+                                class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
+                            >
                                 <Award class="size-5" />
                             </div>
                             <div>
@@ -368,7 +370,9 @@ const totalWeeklyHours = computed(() => {
                         class="group rounded-lg border border-border bg-surface-raised p-5 shadow-xs transition-all hover:border-primary hover:shadow-sm"
                     >
                         <div class="flex items-center gap-3">
-                            <div class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <div
+                                class="rounded-md bg-primary-soft p-2.5 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
+                            >
                                 <GraduationCap class="size-5" />
                             </div>
                             <div>

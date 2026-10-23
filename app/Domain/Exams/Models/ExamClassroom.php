@@ -7,6 +7,14 @@ use App\Support\Tenancy\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $school_id
+ * @property int $exam_id
+ * @property int $classroom_id
+ * @property-read ?Exam $exam
+ * @property-read ?Classroom $classroom
+ */
 class ExamClassroom extends Model
 {
     use BelongsToSchool;
@@ -16,11 +24,13 @@ class ExamClassroom extends Model
         'classroom_id',
     ];
 
+    /** @return BelongsTo<Exam, $this> */
     public function exam(): BelongsTo
     {
         return $this->belongsTo(Exam::class);
     }
 
+    /** @return BelongsTo<Classroom, $this> */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class);

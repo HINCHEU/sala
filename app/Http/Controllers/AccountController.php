@@ -2,7 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Academic\Models\Classroom;
+use App\Domain\Exams\Enums\ExamStatus;
+use App\Domain\Exams\Models\Exam;
+use App\Domain\Exams\Models\ExamSubjectStatus;
+use App\Domain\People\Enums\TeacherStatus;
+use App\Domain\People\Models\Enrollment;
+use App\Domain\People\Models\Teacher;
 use App\Domain\School\Models\School;
+use App\Domain\Teaching\Models\TeachingAssignment;
 use App\Http\Middleware\SetLocale;
 use App\Models\User;
 use App\Support\Tenancy\CurrentSchool;
@@ -30,24 +39,24 @@ class AccountController extends Controller
         $teacher = $user?->teacherProfile();
         $isTeacher = $user?->isTeacher() || $teacher !== null;
 
-        $currentYear = \App\Domain\Academic\Models\AcademicYear::where('school_id', $school->id)->where('is_current', true)->first()
-            ?? \App\Domain\Academic\Models\AcademicYear::where('school_id', $school->id)->orderByDesc('start_date')->first();
+        $currentYear = AcademicYear::where('school_id', $school->id)->where('is_current', true)->first()
+            ?? AcademicYear::where('school_id', $school->id)->orderByDesc('start_date')->first();
 
         $teacherDashboard = null;
         if ($isTeacher && $teacher && $currentYear) {
-            $homeroomClasses = \App\Domain\Academic\Models\Classroom::where('school_id', $school->id)
+            $homeroomClasses = Classroom::where('school_id', $school->id)
                 ->where('academic_year_id', $currentYear->id)
                 ->where('homeroom_teacher_id', $teacher->id)
                 ->with(['gradeLevel:id,number,name_km,name_en', 'enrollments'])
                 ->get()
-                ->map(fn (\App\Domain\Academic\Models\Classroom $c) => [
+                ->map(fn (Classroom $c) => [
                     'id' => $c->id,
                     'name' => $c->name,
                     'grade' => $c->gradeLevel ? (app()->getLocale() === 'en' ? $c->gradeLevel->name_en : $c->gradeLevel->name_km) : '',
                     'student_count' => $c->enrollments->count(),
                 ]);
 
-            $teachingAssignments = \App\Domain\Teaching\Models\TeachingAssignment::where('school_id', $school->id)
+            $teachingAssignments = TeachingAssignment::where('school_id', $school->id)
                 ->where('academic_year_id', $currentYear->id)
                 ->where('teacher_id', $teacher->id)
                 ->with([
@@ -56,7 +65,7 @@ class AccountController extends Controller
                     'subject:id,code,name_km,name_en',
                 ])
                 ->get()
-                ->map(fn (\App\Domain\Teaching\Models\TeachingAssignment $ta) => [
+                ->map(fn (TeachingAssignment $ta) => [
                     'id' => $ta->id,
                     'classroom_id' => $ta->classroom_id,
                     'classroom_name' => $ta->classroom?->name,
@@ -74,9 +83,9 @@ class AccountController extends Controller
                 ->unique()
                 ->all();
 
-            $openExams = \App\Domain\Exams\Models\Exam::where('school_id', $school->id)
+            $openExams = Exam::where('school_id', $school->id)
                 ->where('academic_year_id', $currentYear->id)
-                ->where('status', \App\Domain\Exams\Enums\ExamStatus::Open)
+                ->where('status', ExamStatus::Open)
                 ->whereHas('classrooms', fn ($q) => $q->whereIn('classrooms.id', $assignedClassroomIds))
                 ->with([
                     'term:id,name_km,name_en',
@@ -86,14 +95,14 @@ class AccountController extends Controller
                 ])
                 ->orderBy('start_date')
                 ->get()
-                ->map(fn (\App\Domain\Exams\Models\Exam $e) => [
+                ->map(fn (Exam $e) => [
                     'id' => $e->id,
                     'name' => $e->name,
                     'type' => $e->type->value,
                     'month' => $e->month,
                     'start_date' => $e->start_date?->format('Y-m-d'),
                     'end_date' => $e->end_date?->format('Y-m-d'),
-                    'subjects' => $e->subjectStatuses->map(fn ($ss) => [
+                    'subjects' => $e->subjectStatuses->map(fn (ExamSubjectStatus $ss) => [
                         'id' => $ss->id,
                         'classroom_id' => $ss->classroom_id,
                         'classroom_name' => $ss->classroom?->name,
@@ -116,10 +125,10 @@ class AccountController extends Controller
         if (! $teacherDashboard && $currentYear) {
             $adminDashboard = [
                 'current_year_name' => $currentYear->name,
-                'classrooms_count' => \App\Domain\Academic\Models\Classroom::where('school_id', $school->id)->where('academic_year_id', $currentYear->id)->count(),
-                'teachers_count' => \App\Domain\People\Models\Teacher::where('school_id', $school->id)->where('status', \App\Domain\People\Enums\TeacherStatus::Active)->count(),
-                'students_count' => \App\Domain\People\Models\Enrollment::where('school_id', $school->id)->where('academic_year_id', $currentYear->id)->count(),
-                'open_exams_count' => \App\Domain\Exams\Models\Exam::where('school_id', $school->id)->where('academic_year_id', $currentYear->id)->where('status', \App\Domain\Exams\Enums\ExamStatus::Open)->count(),
+                'classrooms_count' => Classroom::where('school_id', $school->id)->where('academic_year_id', $currentYear->id)->count(),
+                'teachers_count' => Teacher::where('school_id', $school->id)->where('status', TeacherStatus::Active)->count(),
+                'students_count' => Enrollment::where('school_id', $school->id)->where('academic_year_id', $currentYear->id)->count(),
+                'open_exams_count' => Exam::where('school_id', $school->id)->where('academic_year_id', $currentYear->id)->where('status', ExamStatus::Open)->count(),
             ];
         }
 

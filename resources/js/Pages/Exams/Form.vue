@@ -1,9 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, Award, Calendar, CheckSquare, Save, Square } from 'lucide-vue-next';
+import { ArrowLeft, CheckSquare, Save, Square } from 'lucide-vue-next';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import SField from '@/Components/SField.vue';
 
 const props = defineProps({
     exam: { type: Object, default: null },
@@ -23,7 +22,7 @@ const form = useForm({
     term_id: props.exam?.term_id ?? (props.terms[0]?.id || ''),
     name: props.exam?.name ?? '',
     type: props.exam?.type ?? 'monthly',
-    month: props.exam?.month ?? (new Date().getMonth() + 1),
+    month: props.exam?.month ?? new Date().getMonth() + 1,
     start_date: props.exam?.start_date ?? new Date().toISOString().slice(0, 10),
     end_date: props.exam?.end_date ?? new Date().toISOString().slice(0, 10),
     description: props.exam?.description ?? '',
@@ -88,9 +87,7 @@ const submit = () => {
         <form class="space-y-6" @submit.prevent="submit">
             <!-- Basic Details Card -->
             <div class="rounded-lg border border-border bg-surface-raised p-6 shadow-xs">
-                <h2 class="mb-4 text-base font-bold text-ink">
-                    {{ $t('exams.name') }} & {{ $t('exams.dates') }}
-                </h2>
+                <h2 class="mb-4 text-base font-bold text-ink">{{ $t('exams.name') }} & {{ $t('exams.dates') }}</h2>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <!-- Academic Year -->
@@ -118,11 +115,7 @@ const submit = () => {
                         <label for="exam-term" class="block text-sm font-medium text-ink">
                             {{ $t('academic.terms') }}
                         </label>
-                        <select
-                            id="exam-term"
-                            v-model="form.term_id"
-                            class="s-input mt-1"
-                        >
+                        <select id="exam-term" v-model="form.term_id" class="s-input mt-1">
                             <option value="">{{ $t('academic.empty') }}</option>
                             <option v-for="t in terms" :key="t.id" :value="t.id">
                                 {{ page.props.locale === 'en' ? t.name_en : t.name_km }}
@@ -156,11 +149,7 @@ const submit = () => {
                         <label for="exam-type" class="block text-sm font-medium text-ink">
                             {{ $t('exams.type') }} <span class="text-danger">*</span>
                         </label>
-                        <select
-                            id="exam-type"
-                            v-model="form.type"
-                            class="s-input mt-1"
-                        >
+                        <select id="exam-type" v-model="form.type" class="s-input mt-1">
                             <option v-for="type in types" :key="type" :value="type">
                                 {{ $t(`exams.types.${type}`) }}
                             </option>
@@ -175,11 +164,7 @@ const submit = () => {
                         <label for="exam-month" class="block text-sm font-medium text-ink">
                             {{ $t('exams.month') }}
                         </label>
-                        <select
-                            id="exam-month"
-                            v-model="form.month"
-                            class="s-input mt-1"
-                        >
+                        <select id="exam-month" v-model="form.month" class="s-input mt-1">
                             <option v-for="m in 12" :key="m" :value="m">
                                 {{ $t(`exams.months.${m}`) }}
                             </option>
@@ -255,11 +240,7 @@ const submit = () => {
                         </p>
                     </div>
 
-                    <button
-                        type="button"
-                        class="s-btn s-btn-compact"
-                        @click="toggleSelectAll"
-                    >
+                    <button type="button" class="s-btn s-btn-compact" @click="toggleSelectAll">
                         <CheckSquare v-if="allSelected" class="size-3.5 text-primary" />
                         <Square v-else class="size-3.5 text-ink-muted" />
                         {{ allSelected ? $t('exams.deselect_all') : $t('exams.select_all') }}
@@ -291,10 +272,7 @@ const submit = () => {
                             </button>
                         </div>
 
-                        <div
-                            v-if="(grade.classrooms || []).length === 0"
-                            class="text-xs text-ink-muted italic"
-                        >
+                        <div v-if="(grade.classrooms || []).length === 0" class="text-xs text-ink-muted italic">
                             {{ $t('academic.empty') }}
                         </div>
 
@@ -324,19 +302,12 @@ const submit = () => {
 
             <!-- Form Actions -->
             <div class="flex items-center justify-end gap-3 pt-2">
-                <Link
-                    :href="isEditing ? `/exams/${exam.id}` : `/exams?year=${yearId}`"
-                    class="s-btn"
-                >
+                <Link :href="isEditing ? `/exams/${exam.id}` : `/exams?year=${yearId}`" class="s-btn">
                     {{ $t('app.cancel') }}
                 </Link>
-                <button
-                    type="submit"
-                    class="s-btn s-btn-primary"
-                    :disabled="form.processing"
-                >
+                <button type="submit" class="s-btn s-btn-primary" :disabled="form.processing">
                     <Save class="size-4" />
-                    {{ form.processing ? $t('app.saving') : (isEditing ? $t('academic.saved') : $t('exams.create')) }}
+                    {{ form.processing ? $t('app.saving') : isEditing ? $t('academic.saved') : $t('exams.create') }}
                 </button>
             </div>
         </form>

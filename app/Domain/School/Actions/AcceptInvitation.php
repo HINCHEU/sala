@@ -4,6 +4,7 @@ namespace App\Domain\School\Actions;
 
 use App\Domain\People\Models\Teacher;
 use App\Domain\School\Models\SchoolInvitation;
+use App\Domain\Teaching\Actions\SyncHomeroomTeacherRole;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +12,7 @@ class AcceptInvitation
 {
     public function __construct(
         private AddMember $addMember,
-        private \App\Domain\Teaching\Actions\SyncHomeroomTeacherRole $syncHomeroomRole,
+        private SyncHomeroomTeacherRole $syncHomeroomRole,
     ) {}
 
     public function handle(SchoolInvitation $invitation, User $user): void

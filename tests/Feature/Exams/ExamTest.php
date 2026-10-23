@@ -1,7 +1,6 @@
 <?php
 
 use App\Domain\Academic\Models\AcademicYear;
-use App\Domain\Academic\Models\Classroom;
 use App\Domain\Academic\Models\CurriculumSubject;
 use App\Domain\Academic\Models\Subject;
 use App\Domain\Exams\Enums\ExamStatus;

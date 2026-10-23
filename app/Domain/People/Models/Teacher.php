@@ -2,15 +2,18 @@
 
 namespace App\Domain\People\Models;
 
+use App\Domain\Academic\Models\Classroom;
 use App\Domain\Academic\Models\Subject;
 use App\Domain\People\Enums\EmploymentType;
 use App\Domain\People\Enums\Gender;
 use App\Domain\People\Enums\TeacherStatus;
+use App\Domain\Teaching\Models\TeachingAssignment;
 use App\Models\User;
 use App\Support\Tenancy\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -59,15 +62,15 @@ class Teacher extends Model
         return $this->belongsTo(User::class);
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Domain\Teaching\Models\TeachingAssignment, $this> */
-    public function teachingAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /** @return HasMany<TeachingAssignment, $this> */
+    public function teachingAssignments(): HasMany
     {
-        return $this->hasMany(\App\Domain\Teaching\Models\TeachingAssignment::class);
+        return $this->hasMany(TeachingAssignment::class);
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Domain\Academic\Models\Classroom, $this> */
-    public function homeroomClassrooms(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /** @return HasMany<Classroom, $this> */
+    public function homeroomClassrooms(): HasMany
     {
-        return $this->hasMany(\App\Domain\Academic\Models\Classroom::class, 'homeroom_teacher_id');
+        return $this->hasMany(Classroom::class, 'homeroom_teacher_id');
     }
 }
