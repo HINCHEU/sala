@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property ?Carbon $end_date
  * @property ExamStatus $status
  * @property ?string $description
+ * @property int $results_version 0 until the first calculation after locking
+ * @property ?Carbon $results_computed_at
  * @property-read ?AcademicYear $academicYear
  * @property-read ?Term $term
  * @property-read Collection<int, Classroom> $classrooms
@@ -47,6 +49,8 @@ class Exam extends Model
         'end_date',
         'status',
         'description',
+        'results_version',
+        'results_computed_at',
     ];
 
     protected function casts(): array
@@ -57,6 +61,8 @@ class Exam extends Model
             'month' => 'integer',
             'start_date' => 'date:Y-m-d',
             'end_date' => 'date:Y-m-d',
+            'results_version' => 'integer',
+            'results_computed_at' => 'datetime',
         ];
     }
 

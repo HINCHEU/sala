@@ -99,6 +99,42 @@ class ExamPolicy
         return $teacher !== null && (int) $classroom->homeroom_teacher_id === (int) $teacher->id;
     }
 
+    /** After the lock, the teacher of the subject (or a manager) may ask for a correction; the director decides. */
+    public function requestScoreChange(User $user, Exam $exam, Classroom $classroom, Subject $subject): bool
+    {
+        if (! $exam->isLocked() || ! $exam->classrooms()->where('classrooms.id', $classroom->id)->exists()) {
+            return false;
+        }
+        if ($user->can(Permission::ManageExams->value)) {
+            return true;
+        }
+
+        $teacher = $user->teacherProfile();
+
+        return $teacher !== null && TeachingAssignment::where('classroom_id', $classroom->id)
+            ->where('subject_id', $subject->id)->where('teacher_id', $teacher->id)->exists();
+    }
+
+    /** A class's results over a semester or year: managers, its homeroom teacher, its approver, its teachers. */
+    public function viewClassResults(User $user, Classroom $classroom): bool
+    {
+        if ($user->can(Permission::ManageExams->value)) {
+            return true;
+        }
+
+        $approval = ApprovalAssignment::where('academic_year_id', $classroom->academic_year_id)
+            ->where('grade_level_id', $classroom->grade_level_id)->first();
+        if (($approval?->approver_type === ApproverType::User && (int) $approval->user_id === (int) $user->id)
+            || ($approval?->approver_type === ApproverType::Role && $approval->role && $user->hasRole($approval->role))) {
+            return true;
+        }
+
+        $teacher = $user->teacherProfile();
+
+        return $teacher !== null && ((int) $classroom->homeroom_teacher_id === (int) $teacher->id
+            || TeachingAssignment::where('classroom_id', $classroom->id)->where('teacher_id', $teacher->id)->exists());
+    }
+
     /** Who may look at a class's score sheet: whoever enters, approves or manages it. */
     public function viewScores(User $user, Exam $exam, Classroom $classroom): bool
     {

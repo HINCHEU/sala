@@ -6,6 +6,7 @@ import { FileText, Pencil, Phone, Plus, Trash2, Upload, UserMinus } from 'lucide
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import PeopleTabs from '@/Components/PeopleTabs.vue';
 import GuardianForm from '@/Components/GuardianForm.vue';
+import MentionChip from '@/Components/MentionChip.vue';
 import SButton from '@/Components/SButton.vue';
 import SField from '@/Components/SField.vue';
 import StatusPill from '@/Components/StatusPill.vue';
@@ -19,6 +20,7 @@ const props = defineProps({
     relationships: { type: Array, required: true },
     genders: { type: Array, required: true },
     documentTypes: { type: Array, required: true },
+    results: { type: Array, default: () => [] },
 });
 
 const s = computed(() => props.student);
@@ -245,6 +247,31 @@ const card = 'rounded-lg border border-border bg-surface-raised p-4 shadow-sm sm
                         </div>
                     </li>
                 </ul>
+            </section>
+
+            <section :class="card" aria-labelledby="results-title">
+                <h2 id="results-title" class="mb-3 text-lg leading-[30px] font-semibold">
+                    {{ $t('results.history') }}
+                </h2>
+                <p v-if="results.length === 0" class="text-sm text-ink-muted">{{ $t('results.no_history') }}</p>
+                <table v-else class="w-full text-sm">
+                    <thead class="text-left text-ink-muted">
+                        <tr>
+                            <th scope="col" class="py-1 font-medium">{{ $t('exams.title') }}</th>
+                            <th scope="col" class="py-1 text-right font-medium">{{ $t('results.average') }}</th>
+                            <th scope="col" class="py-1 text-right font-medium">{{ $t('results.rank') }}</th>
+                            <th scope="col" class="py-1 font-medium">{{ $t('results.mention') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border">
+                        <tr v-for="r in results" :key="r.exam_id">
+                            <td class="py-2">{{ r.exam }}</td>
+                            <td class="py-2 text-right font-mono tabular-nums">{{ r.average.toFixed(2) }}</td>
+                            <td class="py-2 text-right font-mono tabular-nums">{{ r.rank_class ?? '—' }}</td>
+                            <td class="py-2"><MentionChip :mention="r.mention" /></td>
+                        </tr>
+                    </tbody>
+                </table>
             </section>
 
             <section :class="card" aria-labelledby="documents-title">

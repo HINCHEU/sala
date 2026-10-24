@@ -2,6 +2,7 @@
 
 use App\Domain\Academic\Models\AcademicYear;
 use App\Domain\Academic\Models\CurriculumSubject;
+use App\Domain\Academic\Models\GradeDivisor;
 use App\Domain\Academic\Models\Subject;
 use App\Domain\Exams\Enums\ExamStatus;
 use App\Domain\Exams\Enums\ExamType;
@@ -147,10 +148,17 @@ it('strictly adheres to the lifecycle state machine order', function () {
         ->post("/exams/{$exam->id}/transition", ['status' => 'approved'])
         ->assertSessionHasNoErrors();
 
-    // approved -> locked (OK)
+    // approved -> locked is refused until the grade has a divisor to average with
+    $this->actingAs($this->academicOffice)
+        ->post("/exams/{$exam->id}/transition", ['status' => 'locked'])
+        ->assertSessionHasErrors('status');
+    GradeDivisor::create(['academic_year_id' => $this->year->id, 'grade_level_id' => $this->classroom->grade_level_id, 'divisor' => 2]);
+
+    // approved -> locked (OK), and the results are calculated
     $this->actingAs($this->academicOffice)
         ->post("/exams/{$exam->id}/transition", ['status' => 'locked'])
         ->assertSessionHasNoErrors();
+    expect($exam->fresh()->results_version)->toBe(1);
 
     // locked -> published (OK)
     $this->actingAs($this->academicOffice)

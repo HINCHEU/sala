@@ -15,6 +15,8 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Exams\ExamController;
+use App\Http\Controllers\Exams\ResultController;
+use App\Http\Controllers\Exams\ScoreChangeController;
 use App\Http\Controllers\Exams\ScoreController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\People\EnrollmentController;
@@ -121,6 +123,8 @@ Route::middleware('auth')->group(function () {
                 Route::post('/members/{member}/password', [MemberController::class, 'resetPassword'])->name('members.password');
             });
 
+            Route::get('/results/classes/{classroom}', [ResultController::class, 'period'])->name('results.period');
+
             Route::prefix('exams')->name('exams.')->group(function () {
                 Route::get('/', [ExamController::class, 'index'])->name('index');
                 Route::get('/{exam}', [ExamController::class, 'show'])->name('show')->whereNumber('exam');
@@ -139,6 +143,12 @@ Route::middleware('auth')->group(function () {
                     ->middleware('throttle:120,1');
                 Route::get('/{exam}/scores/export', [ScoreController::class, 'export'])->name('scores.export')->whereNumber('exam');
                 Route::post('/{exam}/scores/import', [ScoreController::class, 'import'])->name('scores.import')->whereNumber('exam');
+
+                Route::get('/{exam}/results', [ResultController::class, 'classroom'])->name('results.classroom')->whereNumber('exam');
+                Route::get('/{exam}/results/grade', [ResultController::class, 'grade'])->name('results.grade')->whereNumber('exam');
+                Route::post('/{exam}/changes', [ScoreChangeController::class, 'store'])->name('changes.store')->whereNumber('exam');
+                Route::post('/{exam}/changes/{change}/decide', [ScoreChangeController::class, 'decide'])->name('changes.decide')
+                    ->whereNumber('exam')->whereNumber('change');
 
                 Route::post('/{exam}/subjects/{subjectStatus}/transition', [ExamController::class, 'transitionSubject'])
                     ->name('subject.transition')

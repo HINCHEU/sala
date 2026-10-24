@@ -13,4 +13,5 @@ enum Permission: string
     case ManageAcademic = 'academic.manage';
     case ManagePeople = 'people.manage';
     case ManageExams = 'exams.manage';
+    case ApproveScoreChanges = 'exams.approve-changes';
 }

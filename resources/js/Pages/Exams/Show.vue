@@ -88,6 +88,15 @@ const classroomMap = computed(() => {
 // Submitting needs a full sheet; the server checks that too.
 const canSubmitSubject = (s) => props.exam.status === 'open' && s.can_enter && s.filled >= s.students;
 const canApproveSubject = (s) => s.can_approve;
+// Results open for the chosen class, or the first class whose sheets this user may see.
+const resultsClassroomId = computed(
+    () =>
+        props.subjectStatuses.find(
+            (s) =>
+                s.can_view_scores &&
+                (selectedClassroomId.value === null || s.classroom_id === selectedClassroomId.value),
+        )?.classroom_id,
+);
 const scoresUrl = (s) => `/exams/${props.exam.id}/scores?classroom=${s.classroom_id}&subject=${s.subject_id}`;
 
 // Action: Transition subject status
@@ -148,6 +157,14 @@ const submitReturn = () => {
             </Link>
 
             <div class="flex items-center gap-2">
+                <Link
+                    v-if="exam.status !== 'draft' && resultsClassroomId"
+                    :href="`/exams/${exam.id}/results?classroom=${resultsClassroomId}`"
+                    class="s-btn s-btn-compact"
+                >
+                    <Award class="size-3.5" />
+                    {{ $t('results.open_exam_results') }}
+                </Link>
                 <Link
                     v-if="canManage && exam.status !== 'locked' && exam.status !== 'published'"
                     :href="`/exams/${exam.id}/edit`"

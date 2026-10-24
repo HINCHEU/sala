@@ -14,6 +14,7 @@ use App\Domain\People\Models\Enrollment;
 use App\Domain\People\Models\Guardian;
 use App\Domain\People\Models\Student;
 use App\Domain\People\Provinces;
+use App\Domain\Results\Models\ExamResult;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\People\StudentRequest;
 use App\Support\Files\StoredFile;
@@ -115,6 +116,21 @@ class StudentController extends Controller
             'relationships' => array_column(Relationship::cases(), 'value'),
             'genders' => array_column(Gender::cases(), 'value'),
             'documentTypes' => array_column(DocumentType::cases(), 'value'),
+            // Every locked exam's current result, newest first.
+            'results' => ExamResult::whereIn('enrollment_id', $student->enrollments->modelKeys())
+                ->join('exams', 'exams.id', '=', 'exam_results.exam_id')
+                ->whereColumn('exam_results.version', 'exams.results_version')
+                ->orderByDesc('exams.end_date')
+                ->get(['exam_results.*', 'exams.name as exam_name', 'exams.end_date as exam_date'])
+                ->map(fn (ExamResult $r) => [
+                    'exam_id' => $r->exam_id,
+                    'exam' => $r->getAttribute('exam_name'),
+                    'date' => $r->getAttribute('exam_date'),
+                    'average' => (float) $r->average,
+                    'rank_class' => $r->rank_class,
+                    'mention' => $r->mention,
+                    'passed' => $r->passed,
+                ]),
         ]);
     }
 

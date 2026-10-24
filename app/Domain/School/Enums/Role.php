@@ -23,7 +23,7 @@ enum Role: string
             self::Director => [
                 Permission::ManageSettings->value, Permission::ManageMembers->value,
                 Permission::ManageAcademic->value, Permission::ManagePeople->value,
-                Permission::ManageExams->value,
+                Permission::ManageExams->value, Permission::ApproveScoreChanges->value,
             ],
             self::AcademicOffice => [
                 Permission::ManageAcademic->value,
