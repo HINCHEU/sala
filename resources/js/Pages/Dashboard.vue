@@ -166,11 +166,14 @@ const totalWeeklyHours = computed(() => {
                                 :key="subj.id"
                                 class="flex items-center justify-between p-2.5 text-xs"
                             >
-                                <div>
+                                <Link
+                                    :href="`/exams/${exam.id}/scores?classroom=${subj.classroom_id}&subject=${subj.subject_id}`"
+                                    class="hover:text-primary hover:underline"
+                                >
                                     <span class="font-bold text-ink">{{ subj.classroom_name }}</span>
                                     <span class="mx-1 text-ink-muted">•</span>
                                     <span class="text-ink">{{ subj.subject_name }}</span>
-                                </div>
+                                </Link>
                                 <div class="flex items-center gap-2">
                                     <StatusPill
                                         :status="subj.status"

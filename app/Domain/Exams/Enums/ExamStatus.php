@@ -19,7 +19,8 @@ enum ExamStatus: string
     {
         return match ($this) {
             self::Draft => in_array($target, [self::Open], true),
-            self::Open => in_array($target, [self::Draft, self::Approved, self::Locked], true),
+            // Locking goes through Approved, so no exam is sealed with subjects nobody approved.
+            self::Open => in_array($target, [self::Draft, self::Approved], true),
             self::Approved => in_array($target, [self::Open, self::Locked], true),
             self::Locked => in_array($target, [self::Published], true),
             self::Published => false,

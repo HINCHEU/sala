@@ -15,6 +15,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Exams\ExamController;
+use App\Http\Controllers\Exams\ScoreController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\People\EnrollmentController;
 use App\Http\Controllers\People\GuardianController;
@@ -132,6 +133,12 @@ Route::middleware('auth')->group(function () {
                     Route::delete('/{exam}', [ExamController::class, 'destroy'])->name('destroy')->whereNumber('exam');
                     Route::post('/{exam}/transition', [ExamController::class, 'transition'])->name('transition')->whereNumber('exam');
                 });
+
+                Route::get('/{exam}/scores', [ScoreController::class, 'sheet'])->name('scores.sheet')->whereNumber('exam');
+                Route::put('/{exam}/scores', [ScoreController::class, 'update'])->name('scores.update')->whereNumber('exam')
+                    ->middleware('throttle:120,1');
+                Route::get('/{exam}/scores/export', [ScoreController::class, 'export'])->name('scores.export')->whereNumber('exam');
+                Route::post('/{exam}/scores/import', [ScoreController::class, 'import'])->name('scores.import')->whereNumber('exam');
 
                 Route::post('/{exam}/subjects/{subjectStatus}/transition', [ExamController::class, 'transitionSubject'])
                     ->name('subject.transition')

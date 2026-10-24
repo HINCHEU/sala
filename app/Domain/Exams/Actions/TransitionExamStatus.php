@@ -24,6 +24,15 @@ class TransitionExamStatus
             ]);
         }
 
+        if ($targetStatus === ExamStatus::Approved) {
+            $pending = $exam->subjectStatuses()->where('status', '!=', SubjectExamStatus::Approved)->count();
+            if ($pending > 0) {
+                throw ValidationException::withMessages([
+                    'status' => __('exams.errors.subjects_not_approved', ['count' => $pending]),
+                ]);
+            }
+        }
+
         return DB::transaction(function () use ($exam, $targetStatus) {
             $oldStatus = $exam->status;
 

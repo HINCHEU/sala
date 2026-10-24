@@ -25,7 +25,6 @@ beforeEach(function () {
     $this->teacherUser = member($this->school, Role::SubjectTeacher);
     $this->teacher = Teacher::create([
         'school_id' => $this->school->id,
-        'user_id' => $this->teacherUser->id,
         'name_km' => 'ហេង សុភាព',
         'name_en' => 'Heng Sopheap',
         'gender' => 'male',
@@ -33,6 +32,8 @@ beforeEach(function () {
         'employment_type' => 'civil_servant',
         'status' => 'active',
     ]);
+    // user_id is not fillable: only an accepted invitation links a login to a teacher.
+    $this->teacher->forceFill(['user_id' => $this->teacherUser->id])->save();
 
     TeachingAssignment::create([
         'school_id' => $this->school->id,
@@ -129,7 +130,19 @@ it('strictly adheres to the lifecycle state machine order', function () {
         ->post("/exams/{$exam->id}/transition", ['status' => 'open'])
         ->assertSessionHasNoErrors();
 
-    // open -> approved (OK)
+    // open -> locked is NOT allowed: locking goes through approval
+    $this->actingAs($this->academicOffice)
+        ->post("/exams/{$exam->id}/transition", ['status' => 'locked'])
+        ->assertSessionHasErrors('status');
+
+    // open -> approved is refused while a subject is not approved
+    $this->actingAs($this->academicOffice)
+        ->post("/exams/{$exam->id}/transition", ['status' => 'approved'])
+        ->assertSessionHasErrors('status');
+
+    ExamSubjectStatus::where('exam_id', $exam->id)->update(['status' => SubjectExamStatus::Approved]);
+
+    // open -> approved (OK, every subject approved)
     $this->actingAs($this->academicOffice)
         ->post("/exams/{$exam->id}/transition", ['status' => 'approved'])
         ->assertSessionHasNoErrors();

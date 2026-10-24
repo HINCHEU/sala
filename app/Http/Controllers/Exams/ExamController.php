@@ -15,7 +15,9 @@ use App\Domain\Exams\Enums\ExamType;
 use App\Domain\Exams\Enums\SubjectExamStatus;
 use App\Domain\Exams\Models\Exam;
 use App\Domain\Exams\Models\ExamSubjectStatus;
+use App\Domain\Exams\Models\Score;
 use App\Domain\Exams\Policies\ExamPolicy;
+use App\Domain\People\Models\Enrollment;
 use App\Domain\School\Enums\Permission;
 use App\Domain\Teaching\Models\TeachingAssignment;
 use App\Http\Controllers\Controller;
@@ -23,7 +25,9 @@ use App\Http\Requests\Exams\ExamRequest;
 use App\Support\Tenancy\CurrentSchool;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,6 +35,9 @@ class ExamController extends Controller
 {
     public function index(Request $request, CurrentSchool $currentSchool): Response
     {
+        Gate::authorize('viewAny', Exam::class);
+        $user = $request->user();
+
         $years = AcademicYear::orderByDesc('start_date')->get(['id', 'name', 'is_current']);
         $yearId = $request->integer('year') ?: ($years->firstWhere('is_current', true) ?? $years->first())?->id;
 
@@ -44,6 +51,8 @@ class ExamController extends Controller
             ->where('academic_year_id', $yearId)
             ->orderByDesc('start_date')
             ->get()
+            ->filter(fn (Exam $exam) => $user->can('view', $exam))
+            ->values()
             ->map(function (Exam $exam) {
                 $statuses = $exam->subjectStatuses;
 
@@ -107,8 +116,10 @@ class ExamController extends Controller
         return redirect()->route('exams.show', $exam->id)->with('success', __('exams.created'));
     }
 
-    public function show(Exam $exam, Request $request): Response
+    public function show(Exam $exam, Request $request, ExamPolicy $policy): Response
     {
+        Gate::authorize('view', $exam);
+
         $exam->load([
             'academicYear:id,name',
             'term:id,name_km,name_en',
@@ -123,8 +134,19 @@ class ExamController extends Controller
         ]);
 
         $user = $request->user();
-        $isTeacher = $user->isTeacher();
         $teacher = $user->teacherProfile();
+
+        // Progress per sheet: students in the class, and cells filled for that subject.
+        $students = Enrollment::whereIn('classroom_id', $exam->classrooms->modelKeys())
+            ->selectRaw('classroom_id, count(*) as total')->groupBy('classroom_id')->pluck('total', 'classroom_id');
+        $filled = Score::where('exam_id', $exam->id)
+            ->join('enrollments', 'enrollments.id', '=', 'scores.enrollment_id')
+            ->selectRaw('enrollments.classroom_id, scores.subject_id, count(*) as total')
+            ->groupBy('enrollments.classroom_id', 'scores.subject_id')->toBase()->get() // plain rows; the school scope still applies
+            ->mapWithKeys(fn ($row) => ["{$row->classroom_id}-{$row->subject_id}" => (int) $row->total]);
+        $classrooms = $exam->classrooms->keyBy('id');
+        $approver = $classrooms->map(fn (Classroom $c) => $policy->approveSubjectScores($user, $exam, $c));
+        $editable = [SubjectExamStatus::Draft, SubjectExamStatus::Returned];
 
         return Inertia::render('Exams/Show', [
             'exam' => [
@@ -183,6 +205,14 @@ class ExamController extends Controller
                 'approved_by' => $ss->approvedBy?->name,
                 'approved_at' => $ss->approved_at?->format('Y-m-d H:i'),
                 'returned_reason' => $ss->returned_reason,
+                'students' => (int) ($students[$ss->classroom_id] ?? 0),
+                'filled' => $filled["{$ss->classroom_id}-{$ss->subject_id}"] ?? 0,
+                // Decided here, from the policy, so the page never guesses who may do what.
+                // A class taken off the exam after it opened keeps its sheets, but nobody acts on them.
+                'can_enter' => $classrooms->has($ss->classroom_id) && in_array($ss->status, $editable, true)
+                    && $policy->enterScores($user, $exam, $classrooms[$ss->classroom_id], $ss->subject),
+                'can_approve' => $exam->isOpen() && $ss->status === SubjectExamStatus::Submitted && ($approver[$ss->classroom_id] ?? false),
+                'can_view_scores' => $classrooms->has($ss->classroom_id) && $policy->viewScores($user, $exam, $classrooms[$ss->classroom_id]),
             ]),
             'canManage' => $user->can(Permission::ManageExams->value),
             'teacherId' => $teacher?->id,
@@ -233,6 +263,11 @@ class ExamController extends Controller
     {
         abort_unless($exam->status === ExamStatus::Draft, 403, __('exams.errors.only_draft_can_be_deleted'));
 
+        // An exam moved back to draft may already hold scores; their keys refuse the delete.
+        if (Score::where('exam_id', $exam->id)->exists()) {
+            return back()->with('error', __('exams.errors.has_scores'));
+        }
+
         $exam->delete();
 
         return redirect()->route('exams.index')->with('success', __('exams.deleted'));
@@ -261,14 +296,19 @@ class ExamController extends Controller
         ]);
 
         $target = SubjectExamStatus::from($validated['status']);
+        $policy = app(ExamPolicy::class);
+        $classroom = $subjectStatus->classroom;
 
-        // Check authorization: approving or returning requires approver or manage permission
+        abort_unless((int) $subjectStatus->exam_id === $exam->id && $classroom && $subjectStatus->subject, 404);
+        if (! $exam->isOpen()) {
+            throw ValidationException::withMessages(['status' => __('exams.errors.not_open_for_scores')]);
+        }
+
+        // Approving or returning is the approver's; submitting or taking back is whoever enters the scores.
         if (in_array($target, [SubjectExamStatus::Approved, SubjectExamStatus::Returned], true)) {
-            $classroom = $subjectStatus->classroom;
-            $canApprove = $request->user()->can(Permission::ManageExams->value)
-                || ($classroom !== null && app(ExamPolicy::class)->approveSubjectScores($request->user(), $exam, $classroom));
-
-            abort_unless($canApprove, 403, __('exams.errors.not_authorized_to_approve'));
+            abort_unless($policy->approveSubjectScores($request->user(), $exam, $classroom), 403, __('exams.errors.not_authorized_to_approve'));
+        } else {
+            abort_unless($policy->enterScores($request->user(), $exam, $classroom, $subjectStatus->subject), 403);
         }
 
         $transitionSubjectAction->handle(

@@ -4,6 +4,8 @@ namespace App\Domain\Exams\Actions;
 
 use App\Domain\Exams\Enums\SubjectExamStatus;
 use App\Domain\Exams\Models\ExamSubjectStatus;
+use App\Domain\Exams\Models\Score;
+use App\Domain\People\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -23,6 +25,18 @@ class TransitionSubjectExamStatus
                     'to' => $targetStatus->label(),
                 ]),
             ]);
+        }
+
+        // Submitting means the sheet is finished: every student in the class has a score or a mark.
+        if ($targetStatus === SubjectExamStatus::Submitted) {
+            $students = Enrollment::where('classroom_id', $record->classroom_id)->pluck('id');
+            $missing = $students->count() - Score::where('exam_id', $record->exam_id)
+                ->where('subject_id', $record->subject_id)->whereIn('enrollment_id', $students)->count();
+            if ($missing > 0) {
+                throw ValidationException::withMessages([
+                    'status' => __('exams.errors.incomplete', ['count' => $missing]),
+                ]);
+            }
         }
 
         if ($targetStatus === SubjectExamStatus::Returned && empty(trim((string) $reason))) {

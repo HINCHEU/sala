@@ -84,28 +84,11 @@ const classroomMap = computed(() => {
     return new Map(props.classrooms.map((c) => [c.id, c]));
 });
 
-// Permissions check per subject
-const canSubmitSubject = (statusRecord) => {
-    if (props.exam.status !== 'open') return false;
-    if (statusRecord.status !== 'draft' && statusRecord.status !== 'returned') return false;
-
-    if (props.canManage) return true;
-    if (!props.teacherId) return false;
-
-    const assigned = getAssignedTeacher(statusRecord.classroom_id, statusRecord.subject_id);
-    return assigned && assigned.teacher_id === props.teacherId;
-};
-
-const canApproveSubject = (statusRecord) => {
-    if (props.exam.status !== 'open') return false;
-    if (statusRecord.status !== 'submitted') return false;
-
-    if (props.canManage) return true;
-    if (!props.teacherId) return false;
-
-    const classroom = classroomMap.value.get(statusRecord.classroom_id);
-    return classroom && classroom.homeroom_teacher?.id === props.teacherId;
-};
+// Who may do what comes from the server's policy (designated approvers included), not a copy of it here.
+// Submitting needs a full sheet; the server checks that too.
+const canSubmitSubject = (s) => props.exam.status === 'open' && s.can_enter && s.filled >= s.students;
+const canApproveSubject = (s) => s.can_approve;
+const scoresUrl = (s) => `/exams/${props.exam.id}/scores?classroom=${s.classroom_id}&subject=${s.subject_id}`;
 
 // Action: Transition subject status
 const subjectActionLoading = ref(null);
@@ -445,8 +428,11 @@ const submitReturn = () => {
                                 />
                             </td>
 
-                            <!-- Audit info / Returned reason note -->
+                            <!-- Cells filled, then audit info / returned reason note -->
                             <td class="px-4 py-3 text-xs text-ink-muted">
+                                <div class="font-mono tabular-nums text-ink">
+                                    {{ status.filled }} / {{ status.students }}
+                                </div>
                                 <div v-if="status.status === 'submitted' && status.submitted_by">
                                     {{
                                         $t('exams.submitted_by', {
@@ -473,6 +459,19 @@ const submitReturn = () => {
                             <!-- Actions -->
                             <td class="px-4 py-3 whitespace-nowrap text-right">
                                 <div class="inline-flex items-center gap-1.5">
+                                    <Link
+                                        v-if="status.can_view_scores && exam.status !== 'draft'"
+                                        :href="scoresUrl(status)"
+                                        class="s-btn s-btn-compact"
+                                        :class="status.can_enter && exam.status === 'open' && 's-btn-primary'"
+                                    >
+                                        <Edit3 class="size-3" />
+                                        {{
+                                            status.can_enter && exam.status === 'open'
+                                                ? $t('exams.actions.enter_scores')
+                                                : $t('exams.actions.view_scores')
+                                        }}
+                                    </Link>
                                     <!-- Submit Button (Teacher / Manage) -->
                                     <button
                                         v-if="canSubmitSubject(status)"

@@ -74,6 +74,7 @@ class HandleInertiaRequests extends Middleware
                 'status' => $request->session()->get('status'),
                 'inviteLink' => $request->session()->get('invite_link'),
                 'tempPassword' => $request->session()->get('temp_password'),
+                'scoreImportErrors' => $request->session()->get('score_import_errors'),
             ],
         ];
     }
