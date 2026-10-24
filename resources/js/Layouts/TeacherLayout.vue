@@ -22,7 +22,7 @@ const tabs = [
     <Head :title="title" />
     <div class="relative min-h-screen bg-surface pb-20">
         <!-- Subtle sovereign watermark pattern -->
-        <KhmerPattern variant="subtle" opacity="0.035" />
+        <KhmerPattern variant="subtle" opacity="0.04" />
 
         <header class="sticky top-0 z-20 border-b border-border bg-surface-raised">
             <!-- Sovereign gold trim ribbon -->

@@ -63,6 +63,9 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
 <template>
     <Head :title="title" />
     <div class="relative min-h-screen bg-surface lg:flex">
+        <!-- Sovereign Khmer Kbach Tapestry Watermark across full layout background -->
+        <KhmerPattern variant="subtle" class="text-primary" opacity="0.04" />
+
         <!-- Phone top bar with Khmer gold ribbon -->
         <header class="border-b border-border bg-surface-raised lg:hidden">
             <KhmerPattern variant="ribbon" class="opacity-75" />
@@ -133,9 +136,8 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
             </div>
         </aside>
 
-        <!-- Main Content Area with Subtle Sovereign Vector Watermark -->
-        <main class="relative mx-auto w-full max-w-6xl flex-1 px-4 py-6 lg:px-8 lg:py-8">
-            <KhmerPattern variant="subtle" opacity="0.035" />
+        <!-- Main Content Area -->
+        <main class="relative z-10 mx-auto w-full max-w-6xl flex-1 px-4 py-6 lg:px-8 lg:py-8">
             <div class="relative z-10">
                 <h1
                     class="mb-6 font-headline text-[22px] leading-8 font-bold tracking-tight text-ink lg:text-[28px] lg:leading-9"
