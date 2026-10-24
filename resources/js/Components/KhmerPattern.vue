@@ -22,7 +22,6 @@ const goldGradId = computed(() => `khmer-gold-${uid}`);
 const bgGradId = computed(() => `khmer-bg-${uid}`);
 const vignetteGradId = computed(() => `khmer-vig-${uid}`);
 const patternId = computed(() => `khmer-pat-${uid}`);
-const ribbonPatId = computed(() => `khmer-ribbon-${uid}`);
 const bandId = computed(() => `khmer-band-${uid}`);
 const juncId = computed(() => `khmer-junc-${uid}`);
 const smallId = computed(() => `khmer-small-${uid}`);
@@ -609,31 +608,24 @@ const subtleBigId = computed(() => `khmer-sbig-${uid}`);
         </svg>
     </div>
 
-    <!-- 3. RIBBON / BORDER VARIANT: Sovereign gold ornamental header trim -->
+    <!-- 3. RIBBON / BORDER VARIANT: Sovereign gold ornamental accent line -->
     <div
         v-else-if="variant === 'ribbon'"
-        class="pointer-events-none relative h-2 w-full overflow-hidden"
+        class="pointer-events-none relative h-0.5 w-full overflow-hidden"
+        :style="{ opacity: opacity ?? undefined }"
         aria-hidden="true"
     >
-        <svg class="size-full" xmlns="http://www.w3.org/2000/svg">
+        <svg class="size-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
                 <linearGradient :id="goldGradId" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#d97706" />
-                    <stop offset="50%" stop-color="#fbbf24" />
-                    <stop offset="100%" stop-color="#d97706" />
+                    <stop offset="0%" stop-color="#d97706" stop-opacity="0.1" />
+                    <stop offset="15%" stop-color="#f59e0b" stop-opacity="0.8" />
+                    <stop offset="50%" stop-color="#fef08a" stop-opacity="1" />
+                    <stop offset="85%" stop-color="#f59e0b" stop-opacity="0.8" />
+                    <stop offset="100%" stop-color="#d97706" stop-opacity="0.1" />
                 </linearGradient>
-                <pattern :id="ribbonPatId" width="24" height="8" patternUnits="userSpaceOnUse">
-                    <path
-                        d="M 12 1 L 24 4 L 12 7 L 0 4 Z"
-                        fill="none"
-                        :stroke="`url(#${goldGradId})`"
-                        stroke-width="1"
-                    />
-                    <circle cx="12" cy="4" r="1.2" :fill="`url(#${goldGradId})`" />
-                </pattern>
             </defs>
-            <rect width="100%" height="100%" :fill="`url(#${goldGradId})`" opacity="0.3" />
-            <rect width="100%" height="100%" :fill="`url(#${ribbonPatId})`" />
+            <rect width="100%" height="100%" :fill="`url(#${goldGradId})`" />
         </svg>
     </div>
 </template>

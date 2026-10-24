@@ -61,7 +61,7 @@ const page = useAppShell();
             >
                 <!-- Royal Gold Accent Top Bar -->
                 <div
-                    class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 shadow-xs"
+                    class="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 shadow-xs"
                     aria-hidden="true"
                 />
 

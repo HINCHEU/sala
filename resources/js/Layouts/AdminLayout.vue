@@ -108,7 +108,7 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
             </div>
 
             <!-- Subtle Khmer sovereign gold trim in sidebar -->
-            <KhmerPattern variant="ribbon" class="mb-4 opacity-50" />
+            <KhmerPattern variant="ribbon" class="mb-4 opacity-75" />
 
             <nav class="flex-1 space-y-1">
                 <Link
