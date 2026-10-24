@@ -64,7 +64,7 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
     <Head :title="title" />
     <div class="relative min-h-screen bg-surface lg:flex">
         <!-- Sovereign Khmer Kbach Tapestry Watermark across full layout background -->
-        <KhmerPattern variant="subtle" class="text-primary" opacity="0.04" />
+        <KhmerPattern variant="subtle" class="text-primary" opacity="0.12" />
 
         <!-- Phone top bar with Khmer gold ribbon -->
         <header class="border-b border-border bg-surface-raised lg:hidden">

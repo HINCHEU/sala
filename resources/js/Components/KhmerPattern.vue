@@ -334,8 +334,8 @@ const subtleBigId = computed(() => `khmer-sbig-${uid}`);
     <!-- 2. SUBTLE APP WATERMARK VARIANT: Authentic Kbach lattice watermark for Admin & Teacher layouts -->
     <div
         v-else-if="variant === 'subtle'"
-        class="pointer-events-none absolute inset-0 -z-10 overflow-hidden text-primary transition-opacity duration-300"
-        :style="{ opacity: opacity ?? '0.04' }"
+        class="pointer-events-none absolute inset-0 z-0 overflow-hidden text-primary transition-opacity duration-300"
+        :style="{ opacity: opacity ?? '0.12' }"
         aria-hidden="true"
     >
         <svg class="size-full" xmlns="http://www.w3.org/2000/svg">
@@ -582,8 +582,8 @@ const subtleBigId = computed(() => `khmer-sbig-${uid}`);
                     </g>
                 </g>
 
-                <!-- Seamless refined 84x84 tile in currentColor -->
-                <pattern :id="patternId" width="84" height="84" viewBox="0 0 147 147" patternUnits="userSpaceOnUse">
+                <!-- Seamless refined 96x96 tile in currentColor -->
+                <pattern :id="patternId" width="96" height="96" viewBox="0 0 147 147" patternUnits="userSpaceOnUse">
                     <g fill="currentColor">
                         <!-- lattice: the 4 edges of the diamond around the big motif -->
                         <use :href="`#${subtleBandId}`" transform="translate(73.5 0) rotate(45)" />
