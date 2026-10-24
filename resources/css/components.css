@@ -45,6 +45,11 @@
     border-color: var(--primary-dark);
     color: var(--on-primary);
 }
+[data-theme='dark'] .s-btn-primary:hover:not(:disabled) {
+    background: #9db5de;
+    border-color: #9db5de;
+    color: #002045;
+}
 .s-btn-honorary,
 .s-btn-gold {
     background: var(--gold);
@@ -165,6 +170,32 @@
     color: #dc2626;
 }
 
+[data-theme='dark'] .s-pill-draft {
+    background: var(--surface-sunken);
+    color: var(--ink-muted);
+    border: 1px solid var(--border);
+}
+[data-theme='dark'] .s-pill-submitted {
+    background: var(--primary-soft);
+    color: var(--on-primary-container);
+}
+[data-theme='dark'] .s-pill-approved {
+    background: var(--success-soft);
+    color: var(--success);
+}
+[data-theme='dark'] .s-pill-locked {
+    background: var(--warning-soft);
+    color: var(--warning);
+}
+[data-theme='dark'] .s-pill-info {
+    background: var(--info-soft);
+    color: var(--info);
+}
+[data-theme='dark'] .s-pill-danger {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
 /* Metric KPI Cards & Spreadsheet Cells */
 .s-kpi-female {
     background: #eef2f6;
@@ -176,6 +207,10 @@
     font-size: 11px;
     font-weight: 600;
     font-family: var(--font-mono);
+}
+[data-theme='dark'] .s-kpi-female {
+    background: var(--surface-sunken);
+    color: var(--primary);
 }
 .s-grid-cell {
     border: 1px solid var(--border);

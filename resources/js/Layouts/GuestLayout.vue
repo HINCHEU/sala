@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import KhmerPattern from '@/Components/KhmerPattern.vue';
 import LocaleSwitcher from '@/Components/LocaleSwitcher.vue';
+import ThemeSwitcher from '@/Components/ThemeSwitcher.vue';
 import { useAppShell } from '@/lib/useAppShell';
 
 defineProps({ title: { type: String, required: true } });
@@ -48,7 +49,10 @@ const page = useAppShell();
                         </p>
                     </div>
                 </div>
-                <LocaleSwitcher />
+                <div class="flex items-center gap-2">
+                    <ThemeSwitcher />
+                    <LocaleSwitcher />
+                </div>
             </div>
 
             <!-- Elevated Premium Card with Glassmorphism & Gold Accent Bar -->

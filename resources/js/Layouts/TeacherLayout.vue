@@ -4,6 +4,7 @@ import { House, LogOut, ShieldCheck } from 'lucide-vue-next';
 import SchoolBrand from '@/Components/SchoolBrand.vue';
 import SchoolSwitcher from '@/Components/SchoolSwitcher.vue';
 import LocaleSwitcher from '@/Components/LocaleSwitcher.vue';
+import ThemeSwitcher from '@/Components/ThemeSwitcher.vue';
 import KhmerPattern from '@/Components/KhmerPattern.vue';
 import { useAppShell } from '@/lib/useAppShell';
 
@@ -29,7 +30,10 @@ const tabs = [
             <KhmerPattern variant="ribbon" class="opacity-75" />
             <div class="mx-auto flex max-w-xl items-center justify-between gap-2 px-4 py-2">
                 <SchoolBrand />
-                <LocaleSwitcher />
+                <div class="flex items-center gap-2">
+                    <ThemeSwitcher />
+                    <LocaleSwitcher />
+                </div>
             </div>
         </header>
 

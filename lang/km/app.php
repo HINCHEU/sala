@@ -51,4 +51,7 @@ return [
     'previous' => 'មុន',
     'next' => 'បន្ទាប់',
     'page_of' => 'ទំព័រ :page នៃ :pages',
+    'theme' => 'ស្បែក',
+    'light_mode' => 'ពន្លឺ',
+    'dark_mode' => 'ងងឹត',
 ];

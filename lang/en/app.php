@@ -51,4 +51,7 @@ return [
     'previous' => 'Previous',
     'next' => 'Next',
     'page_of' => 'Page :page of :pages',
+    'theme' => 'Theme',
+    'light_mode' => 'Light mode',
+    'dark_mode' => 'Dark mode',
 ];

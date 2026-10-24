@@ -17,6 +17,7 @@ import {
 import SchoolBrand from '@/Components/SchoolBrand.vue';
 import SchoolSwitcher from '@/Components/SchoolSwitcher.vue';
 import LocaleSwitcher from '@/Components/LocaleSwitcher.vue';
+import ThemeSwitcher from '@/Components/ThemeSwitcher.vue';
 import KhmerPattern from '@/Components/KhmerPattern.vue';
 import { useAppShell } from '@/lib/useAppShell';
 
@@ -69,18 +70,21 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
         <!-- Phone top bar with Khmer gold ribbon -->
         <header class="border-b border-border bg-surface-raised lg:hidden">
             <KhmerPattern variant="ribbon" class="opacity-75" />
-            <div class="flex items-center gap-2 px-4 py-2">
-                <button
-                    type="button"
-                    class="s-btn s-btn-ghost px-2"
-                    :aria-label="$t('app.menu')"
-                    :aria-expanded="open"
-                    aria-controls="sidebar"
-                    @click="open = true"
-                >
-                    <Menu :size="20" :stroke-width="1.75" />
-                </button>
-                <SchoolBrand />
+            <div class="flex items-center justify-between gap-2 px-4 py-2">
+                <div class="flex items-center gap-2">
+                    <button
+                        type="button"
+                        class="s-btn s-btn-ghost px-2"
+                        :aria-label="$t('app.menu')"
+                        :aria-expanded="open"
+                        aria-controls="sidebar"
+                        @click="open = true"
+                    >
+                        <Menu :size="20" :stroke-width="1.75" />
+                    </button>
+                    <SchoolBrand />
+                </div>
+                <ThemeSwitcher />
             </div>
         </header>
 
@@ -127,7 +131,10 @@ const isActive = (item) => (item.href === '/' ? page.url === '/' : page.url.star
 
             <div class="space-y-3 border-t border-border pt-4">
                 <SchoolSwitcher />
-                <LocaleSwitcher />
+                <div class="flex items-center justify-between gap-2">
+                    <LocaleSwitcher />
+                    <ThemeSwitcher />
+                </div>
                 <p class="truncate text-xs font-medium text-ink-muted">{{ page.props.auth.user.name }}</p>
                 <Link href="/logout" method="post" as="button" class="s-btn w-full">
                     <LogOut :size="18" :stroke-width="1.75" aria-hidden="true" />
