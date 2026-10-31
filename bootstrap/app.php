@@ -1,20 +1,25 @@
 <?php
 
+use App\Http\Controllers\HealthController;
 use App\Http\Middleware\EnsureCurrentSchool;
 use App\Http\Middleware\EnsureTwoFactorEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
+use App\Support\Monitoring\ErrorCounter;
 use App\Support\Tenancy\ResolveSchool;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        // Outside the web group: it has to answer even when sessions and tenancy cannot.
+        then: fn () => Route::get('/health', HealthController::class),
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Order matters: the school decides the default locale, and Inertia shares both.
@@ -37,5 +42,5 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(fn (Throwable $e) => ErrorCounter::hit());
     })->create();

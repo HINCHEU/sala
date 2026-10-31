@@ -1,0 +1,53 @@
+<?php
+
+return [
+    'title' => 'Activity log',
+    'all' => 'All',
+    'group' => 'Type',
+    'user' => 'User',
+    'from' => 'From',
+    'to' => 'To',
+    'when' => 'When',
+    'event' => 'Action',
+    'details' => 'Details',
+    'change' => 'Change',
+    'system' => 'System',
+    'empty_title' => 'No activity',
+    'empty_text' => 'Actions matching these filters will show here.',
+    'groups' => [
+        'scores' => 'Scores',
+        'exams' => 'Exams',
+        'people' => 'Students and teachers',
+        'academic' => 'Academic structure',
+        'members' => 'Users',
+    ],
+    'events' => [
+        'score' => [
+            'entered' => 'Score entered',
+            'changed_after_lock' => 'Score changed after lock',
+        ],
+        'score_change' => ['requested' => 'Score change requested'],
+        'exam' => [
+            'created' => 'Exam created',
+            'updated' => 'Exam edited',
+            'status_changed' => 'Exam status changed',
+            'subject_status_changed' => 'Subject status changed',
+            'results_computed' => 'Results calculated',
+        ],
+        'student' => ['created' => 'Student added', 'updated' => 'Student edited'],
+        'students' => ['imported' => 'Student list imported'],
+        'teacher' => ['created' => 'Teacher added', 'updated' => 'Teacher edited'],
+        'guardian' => ['linked' => 'Guardian linked', 'unlinked' => 'Guardian unlinked', 'updated' => 'Guardian edited'],
+        'enrollment' => ['added' => 'Enrolled in class', 'moved' => 'Moved to another class', 'removed' => 'Removed from class'],
+        'document' => ['added' => 'Document added', 'deleted' => 'Document deleted'],
+        'academic' => [
+            'curriculum_saved' => 'Curriculum saved',
+            'curriculum_copied' => 'Curriculum copied',
+            'moeys_template_applied' => 'MoEYS template applied',
+            'year_set_current' => 'Current year set',
+        ],
+        'teaching' => ['assigned' => 'Teachers assigned', 'copied' => 'Teaching assignments copied'],
+        'approval' => ['assigned' => 'Score approver set'],
+        'member' => ['added' => 'User added', 'invited' => 'User invited', 'password_reset' => 'Password reset'],
+    ],
+];

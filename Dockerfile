@@ -23,7 +23,7 @@ COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /u
 # Composer stays in the image so the dev container can run `composer setup` against the mounted source.
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 RUN install-php-extensions pdo_mysql redis pcntl gd zip intl bcmath exif opcache \
-    && apk add --no-cache supervisor mysql-client \
+    && apk add --no-cache supervisor mysql-client mariadb-connector-c \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
 COPY docker/php/app.ini $PHP_INI_DIR/conf.d/app.ini

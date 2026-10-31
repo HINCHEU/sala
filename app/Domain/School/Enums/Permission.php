@@ -10,6 +10,7 @@ enum Permission: string
 {
     case ManageSettings = 'school.manage-settings';
     case ManageMembers = 'school.manage-members';
+    case ViewActivity = 'school.view-activity';
     case ManageAcademic = 'academic.manage';
     case ManagePeople = 'people.manage';
     case ManageExams = 'exams.manage';

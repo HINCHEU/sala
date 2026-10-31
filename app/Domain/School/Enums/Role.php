@@ -21,7 +21,7 @@ enum Role: string
     {
         return match ($this) {
             self::Director => [
-                Permission::ManageSettings->value, Permission::ManageMembers->value,
+                Permission::ManageSettings->value, Permission::ManageMembers->value, Permission::ViewActivity->value,
                 Permission::ManageAcademic->value, Permission::ManagePeople->value,
                 Permission::ManageExams->value, Permission::ApproveScoreChanges->value,
             ],

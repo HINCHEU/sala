@@ -12,6 +12,7 @@ use App\Http\Controllers\Academic\SubjectController;
 use App\Http\Controllers\Academic\TeachingAssignmentController;
 use App\Http\Controllers\Academic\TrackController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Exams\ExamController;
@@ -123,6 +124,9 @@ Route::middleware('auth')->group(function () {
                 Route::post('/members/invitations', [MemberController::class, 'invite'])->name('members.invite');
                 Route::post('/members/{member}/password', [MemberController::class, 'resetPassword'])->name('members.password');
             });
+
+            Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index')
+                ->middleware('can:'.Permission::ViewActivity->value);
 
             Route::get('/results/classes/{classroom}', [ResultController::class, 'period'])->name('results.period');
 

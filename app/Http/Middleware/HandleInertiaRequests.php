@@ -64,6 +64,7 @@ class HandleInertiaRequests extends Middleware
                 'platform' => (bool) $user?->is_platform_admin,
                 'manageSettings' => $school && $user?->can(Permission::ManageSettings->value),
                 'manageMembers' => $school && $user?->can(Permission::ManageMembers->value),
+                'viewActivity' => $school && $user?->can(Permission::ViewActivity->value),
                 'manageAcademic' => $school && $user?->can(Permission::ManageAcademic->value),
                 'managePeople' => $school && $user?->can(Permission::ManagePeople->value),
                 'manageExams' => $school && $user?->can(Permission::ManageExams->value),

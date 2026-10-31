@@ -42,6 +42,13 @@ return [
     'telegram' => [
         'bot_token' => env('TELEGRAM_BOT_TOKEN'),
         'webhook_secret' => env('TELEGRAM_WEBHOOK_SECRET'),
+        'alert_chat_id' => env('TELEGRAM_ALERT_CHAT_ID'),
+    ],
+
+    'monitoring' => [
+        'health_token' => env('HEALTH_TOKEN'),
+        // The file store, so alert state and error counts survive Redis being the thing that is down.
+        'cache_store' => env('MONITOR_CACHE_STORE', 'file'),
     ],
 
 ];
