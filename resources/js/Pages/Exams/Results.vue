@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Link, router, useForm, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, Check, X } from 'lucide-vue-next';
+import { ArrowLeft, Check, Printer, X } from 'lucide-vue-next';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import MentionChip from '@/Components/MentionChip.vue';
 import Modal from '@/Components/Modal.vue';
@@ -18,6 +18,7 @@ const props = defineProps({
     divisor: { type: Number, default: null },
     statistics: { type: Array, required: true },
     changes: { type: Array, required: true },
+    documents: { type: Array, required: true },
     canDecide: { type: Boolean, default: false },
 });
 
@@ -30,7 +31,10 @@ const stat = (subjectId) => props.statistics.find((s) => s.subject_id === subjec
 // Right after locking the job is still running: refresh until its version lands.
 let timer = null;
 onMounted(() => {
-    timer = setInterval(() => calculating.value && router.reload({ only: ['exam', 'rows'] }), 3000);
+    timer = setInterval(() => {
+        if (calculating.value) router.reload({ only: ['exam', 'rows'] });
+        else if (props.documents.some((d) => d.status === 'pending')) router.reload({ only: ['documents'] });
+    }, 3000);
 });
 onBeforeUnmount(() => clearInterval(timer));
 
@@ -64,6 +68,16 @@ const sendRequest = () =>
 
 const decide = (change, approve) =>
     router.post(`/exams/${props.exam.id}/changes/${change.id}/decide`, { approve }, { preserveScroll: true });
+
+const documentKinds = ['score_sheet', 'report_cards', 'honor_roll'];
+const paper = ref('A4');
+const documentOf = (kind) => props.documents.find((d) => d.kind === kind);
+const generate = (kind) =>
+    router.post(
+        `/exams/${props.exam.id}/documents`,
+        { classroom_id: props.classroom.id, kind, paper: paper.value },
+        { preserveScroll: true },
+    );
 
 const card = 'rounded-lg border border-border bg-surface-raised shadow-xs';
 </script>
@@ -118,6 +132,51 @@ const card = 'rounded-lg border border-border bg-surface-raised shadow-xs';
                 {{ $t('results.change.hint') }}
             </p>
 
+            <section v-if="exam.printable" :class="card" class="p-4" aria-labelledby="documents-title">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <h2 id="documents-title" class="text-lg font-semibold">{{ $t('documents.title') }}</h2>
+                    <label class="flex items-center gap-2 text-sm">
+                        {{ $t('documents.paper') }}
+                        <select v-model="paper" class="s-input w-auto">
+                            <option value="A4">A4</option>
+                            <option value="A5">A5</option>
+                        </select>
+                    </label>
+                </div>
+                <ul class="divide-y divide-border">
+                    <li v-for="kind in documentKinds" :key="kind" class="flex flex-wrap items-center gap-2 py-2">
+                        <span class="me-auto text-sm font-medium">{{ $t(`documents.kinds.${kind}`) }}</span>
+                        <span v-if="documentOf(kind)?.status === 'failed'" role="alert" class="text-sm text-danger">
+                            {{ $t('documents.failed') }}
+                        </span>
+                        <span
+                            v-if="documentOf(kind)?.status === 'pending'"
+                            role="status"
+                            class="flex items-center gap-2 text-sm text-ink-muted"
+                        >
+                            <span class="s-spin" aria-hidden="true" /> {{ $t('documents.generating') }}
+                        </span>
+                        <template v-else>
+                            <a
+                                v-if="documentOf(kind)?.status === 'ready'"
+                                :href="`/exams/${exam.id}/documents/${documentOf(kind).id}`"
+                                target="_blank"
+                                rel="noopener"
+                                class="s-btn s-btn-primary"
+                            >
+                                {{ $t('documents.download') }}
+                            </a>
+                            <button type="button" class="s-btn" @click="generate(kind)">
+                                {{ $t(documentOf(kind) ? 'documents.regenerate' : 'documents.generate') }}
+                            </button>
+                        </template>
+                    </li>
+                </ul>
+                <p v-if="$page.props.errors?.documents" role="alert" class="mt-2 text-sm text-danger">
+                    {{ $page.props.errors.documents }}
+                </p>
+            </section>
+
             <section :class="card" class="overflow-x-auto" :aria-label="$t('results.class_sheet')">
                 <table class="w-full text-sm">
                     <thead class="bg-surface-sunken text-left text-xs font-semibold text-ink-muted">
@@ -140,6 +199,9 @@ const card = 'rounded-lg border border-border bg-surface-raised shadow-xs';
                             <th scope="col" class="px-2 py-2">{{ $t('results.result') }}</th>
                             <th v-if="exam.locked" scope="col" class="px-2 py-2 text-right">
                                 {{ $t('results.rank_grade') }}
+                            </th>
+                            <th v-if="exam.printable" scope="col" class="px-2 py-2">
+                                <span class="sr-only">{{ $t('documents.print_card') }}</span>
                             </th>
                         </tr>
                     </thead>
@@ -179,6 +241,19 @@ const card = 'rounded-lg border border-border bg-surface-raised shadow-xs';
                             </td>
                             <td v-if="exam.locked" class="px-2 py-1.5 text-right font-mono tabular-nums">
                                 {{ row.rank_grade ?? '—' }}
+                            </td>
+                            <td v-if="exam.printable" class="px-2 py-1">
+                                <a
+                                    v-if="row.stored"
+                                    :href="`/exams/${exam.id}/report-cards/${row.enrollment_id}?paper=${paper}`"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="s-btn s-btn-ghost s-btn-compact"
+                                    :aria-label="`${$t('documents.print_card')}: ${row.name_km}`"
+                                    :title="$t('documents.print_card')"
+                                >
+                                    <Printer :size="16" :stroke-width="1.75" aria-hidden="true" />
+                                </a>
                             </td>
                         </tr>
                     </tbody>

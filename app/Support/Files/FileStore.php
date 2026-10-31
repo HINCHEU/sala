@@ -61,6 +61,11 @@ class FileStore
         return $stored;
     }
 
+    public function contents(StoredFile $file): string
+    {
+        return (string) Storage::disk($file->disk)->get($file->path);
+    }
+
     public function url(StoredFile $file): string
     {
         return $file->disk === self::PUBLIC_DISK

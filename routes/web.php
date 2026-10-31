@@ -15,6 +15,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Exams\ExamController;
+use App\Http\Controllers\Exams\ExamDocumentController;
 use App\Http\Controllers\Exams\ResultController;
 use App\Http\Controllers\Exams\ScoreChangeController;
 use App\Http\Controllers\Exams\ScoreController;
@@ -146,6 +147,11 @@ Route::middleware('auth')->group(function () {
 
                 Route::get('/{exam}/results', [ResultController::class, 'classroom'])->name('results.classroom')->whereNumber('exam');
                 Route::get('/{exam}/results/grade', [ResultController::class, 'grade'])->name('results.grade')->whereNumber('exam');
+                Route::post('/{exam}/documents', [ExamDocumentController::class, 'store'])->name('documents.store')->whereNumber('exam');
+                Route::get('/{exam}/documents/{document}', [ExamDocumentController::class, 'download'])->name('documents.download')
+                    ->whereNumber('exam')->whereNumber('document');
+                Route::get('/{exam}/report-cards/{enrollment}', [ExamDocumentController::class, 'reportCard'])->name('documents.report-card')
+                    ->whereNumber('exam')->whereNumber('enrollment');
                 Route::post('/{exam}/changes', [ScoreChangeController::class, 'store'])->name('changes.store')->whereNumber('exam');
                 Route::post('/{exam}/changes/{change}/decide', [ScoreChangeController::class, 'decide'])->name('changes.decide')
                     ->whereNumber('exam')->whereNumber('change');

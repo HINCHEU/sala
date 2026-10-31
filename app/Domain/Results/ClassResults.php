@@ -17,6 +17,7 @@ use App\Domain\Results\Engine\MentionResolver;
 use App\Domain\Results\Engine\Ranker;
 use App\Domain\Results\Engine\ResultCalculator;
 use App\Domain\Results\Engine\SubjectRule;
+use App\Domain\Results\Models\ExamResult;
 use App\Domain\School\Models\School;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
@@ -70,6 +71,34 @@ final class ClassResults
             ])->values()->all(),
             'divisor' => $divisor !== null ? (float) $divisor : null,
         ];
+    }
+
+    /**
+     * The sheet to show: live numbers while open; once locked, the stored version's numbers are the record.
+     * `stored` says whether a row has a stored result (a student enrolled after the lock has none).
+     *
+     * @return array{subjects: list<array<string, mixed>>, rows: list<array<string, mixed>>, divisor: ?float}
+     */
+    public function sheet(Exam $exam, Classroom $classroom): array
+    {
+        $sheet = $this->compute($exam, $classroom);
+        $stored = $exam->isLocked() && $exam->results_version > 0
+            ? ExamResult::where('exam_id', $exam->id)->where('version', $exam->results_version)->where('classroom_id', $classroom->id)->get()->keyBy('enrollment_id')
+            : collect();
+
+        $sheet['rows'] = array_map(function (array $row) use ($stored) {
+            $result = $stored->get($row['enrollment_id']);
+
+            return $result ? [
+                ...$row,
+                'stored' => true,
+                'total' => (float) $result->total, 'average' => (float) $result->average,
+                'rank_class' => $result->rank_class, 'rank_grade' => $result->rank_grade,
+                'mention' => $result->mention, 'passed' => $result->passed,
+            ] : [...$row, 'stored' => false, 'rank_grade' => null];
+        }, $sheet['rows']);
+
+        return $sheet;
     }
 
     /**

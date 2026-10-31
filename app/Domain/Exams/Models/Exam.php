@@ -7,6 +7,8 @@ use App\Domain\Academic\Models\Classroom;
 use App\Domain\Academic\Models\Term;
 use App\Domain\Exams\Enums\ExamStatus;
 use App\Domain\Exams\Enums\ExamType;
+use App\Domain\Results\Enums\ChangeRequestStatus;
+use App\Domain\Results\Models\ScoreChangeRequest;
 use App\Support\Tenancy\BelongsToSchool;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -111,6 +113,17 @@ class Exam extends Model
     public function isOpen(): bool
     {
         return $this->status === ExamStatus::Open;
+    }
+
+    /**
+     * Results that can be printed: locked, calculated, and no approved correction waiting for its
+     * recalculation (its score has already changed, but the stored results do not show it yet).
+     */
+    public function hasFinalResults(): bool
+    {
+        return $this->isLocked() && $this->results_version > 0
+            && ! ScoreChangeRequest::where('exam_id', $this->id)->where('status', ChangeRequestStatus::Approved)
+                ->where('decided_at', '>', $this->results_computed_at)->exists();
     }
 
     public function isLocked(): bool

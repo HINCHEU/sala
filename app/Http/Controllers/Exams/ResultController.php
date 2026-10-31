@@ -10,6 +10,7 @@ use App\Domain\Exams\Models\Exam;
 use App\Domain\Exams\Policies\ExamPolicy;
 use App\Domain\Results\ClassResults;
 use App\Domain\Results\Enums\ChangeRequestStatus;
+use App\Domain\Results\Models\ExamDocument;
 use App\Domain\Results\Models\ExamResult;
 use App\Domain\Results\Models\ScoreChangeRequest;
 use App\Domain\Results\PeriodResults;
@@ -35,23 +36,9 @@ class ResultController extends Controller
         $user = $request->user();
         abort_unless($this->policy->viewScores($user, $exam, $classroom), 403);
 
-        $sheet = $classResults->compute($exam, $classroom);
+        $sheet = $classResults->sheet($exam, $classroom);
         $subjects = Subject::whereKey(array_column($sheet['subjects'], 'id'))->get()->keyBy('id');
-        $stored = $exam->isLocked() && $exam->results_version > 0
-            ? ExamResult::where('exam_id', $exam->id)->where('version', $exam->results_version)->where('classroom_id', $classroom->id)->get()->keyBy('enrollment_id')
-            : null;
-
-        $rows = collect($sheet['rows'])->map(function (array $row) use ($stored) {
-            $result = $stored?->get($row['enrollment_id']);
-
-            // Locked: the stored version is the record; the live numbers are only shown while open.
-            return $result ? [
-                ...$row,
-                'total' => (float) $result->total, 'average' => (float) $result->average,
-                'rank_class' => $result->rank_class, 'rank_grade' => $result->rank_grade,
-                'mention' => $result->mention, 'passed' => $result->passed,
-            ] : [...$row, 'rank_grade' => null];
-        })->sortBy(fn (array $r) => [$r['rank_class'] ?? PHP_INT_MAX, $r['roll_no']])->values();
+        $rows = collect($sheet['rows'])->sortBy(fn (array $r) => [$r['rank_class'] ?? PHP_INT_MAX, $r['roll_no']])->values();
 
         return Inertia::render('Exams/Results', [
             'exam' => [
@@ -60,6 +47,7 @@ class ResultController extends Controller
                 'locked' => $exam->isLocked(),
                 'computed_at' => $exam->results_computed_at?->format('Y-m-d H:i'),
                 'term_id' => $exam->term_id,
+                'printable' => $exam->hasFinalResults(),
             ],
             'classroom' => [...$classroom->only('id', 'name', 'grade_level_id')],
             'classrooms' => $exam->classrooms()->orderBy('name')->get()
@@ -73,6 +61,8 @@ class ResultController extends Controller
             'divisor' => $sheet['divisor'],
             'statistics' => $this->statistics($sheet['subjects'], collect($sheet['rows'])),
             'changes' => $this->changes($exam, $classroom),
+            'documents' => ExamDocument::where('exam_id', $exam->id)->where('classroom_id', $classroom->id)->where('version', $exam->results_version)
+                ->get()->map(fn (ExamDocument $d) => ['id' => $d->id, 'kind' => $d->kind->value, 'paper' => $d->paper, 'status' => $d->status->value]),
             'canDecide' => $user->can(Permission::ApproveScoreChanges->value),
         ]);
     }
